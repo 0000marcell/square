@@ -1,0 +1,109 @@
+Nonterminals useless in grammar
+
+    stmts
+    stmt
+    bra
+
+
+Terminals unused in grammar
+
+    NUM
+    OP
+    SEMICOLUMN
+    OPBRA
+    CLBRA
+    OTHER
+
+
+Rules useless in grammar
+
+    3 stmts: ε
+    4      | stmt OP stmts
+    5      | stmt stmts
+
+    6 stmt: NUM
+    7     | SEMICOLUMN
+
+    8 bra: OPBRA
+    9    | CLBRA
+
+
+Grammar
+
+    0 $accept: prog $end
+
+    1 prog: fcall fcall
+
+    2 fcall: PRINT
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    error (256)
+    NUM <number> (258)
+    OP <character> (259)
+    SEMICOLUMN (260)
+    PRINT (261) 2
+    OPBRA (262)
+    CLBRA (263)
+    OTHER (264)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (10)
+        on left: 0
+    prog (11)
+        on left: 1
+        on right: 0
+    fcall (12)
+        on left: 2
+        on right: 1
+
+
+State 0
+
+    0 $accept: • prog $end
+
+    PRINT  shift, and go to state 1
+
+    prog   go to state 2
+    fcall  go to state 3
+
+
+State 1
+
+    2 fcall: PRINT •
+
+    $default  reduce using rule 2 (fcall)
+
+
+State 2
+
+    0 $accept: prog • $end
+
+    $end  shift, and go to state 4
+
+
+State 3
+
+    1 prog: fcall • fcall
+
+    PRINT  shift, and go to state 1
+
+    fcall  go to state 5
+
+
+State 4
+
+    0 $accept: prog $end •
+
+    $default  accept
+
+
+State 5
+
+    1 prog: fcall fcall •
+
+    $default  reduce using rule 1 (prog)
