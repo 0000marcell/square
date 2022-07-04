@@ -1,0 +1,2 @@
+make
+./square ./source.sq

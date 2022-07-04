@@ -1,1 +1,4 @@
-:print :print       
+[>:fib a,b: 
+  a+b
+]
+

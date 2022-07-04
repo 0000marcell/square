@@ -60,7 +60,13 @@ extern int yydebug;
     PRINT = 261,                   /* PRINT  */
     OPBRA = 262,                   /* OPBRA  */
     CLBRA = 263,                   /* CLBRA  */
-    OTHER = 264                    /* OTHER  */
+    IDFUNC = 264,                  /* IDFUNC  */
+    GT = 265,                      /* GT  */
+    OTHER = 266,                   /* OTHER  */
+    ID = 267,                      /* ID  */
+    COM = 268,                     /* COM  */
+    COL = 269,                     /* COL  */
+    NLINE = 270                    /* NLINE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -69,12 +75,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 19 "square.y"
+#line 38 "square.y"
 
     int number;
     char character;
+    char *string;
 
-#line 78 "square.tab.h"
+#line 85 "square.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

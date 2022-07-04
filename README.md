@@ -1,37 +1,16 @@
-# Square language 
+# Square Language 
 
-This is toy language built when I was learning about programming languages 
-and assembly x86, the language has a VM that transform the AST in to x86 instructions
-please don't use this for anything
-
-```
-def fib(n)
-
-    if n == 0
-        return 0
-    end
-    if n == 1
-        return 1
-    end
-
-    if n >= 2
-        return fib(n-1) + (fib(n-2))
-    end
-
-end
-```
+This is toy language built for learning purposes, the plan is to use flex and bison
+to create an AST then transform the AST to x86 instructions  
+the language will have the following syntax.
 
 ```
-[:program
-  [:add a b 
-    a+b 
+[>:fib n:
+  [:if n == 0: 0]
+  [:if n == 1: 1]
+  [:if n >= 2: 
+    [:fib n-1] + [:fib n-2]
   ]
-
-  [:print [:add 1 1]]
-
-  [:if a > b; 
-    
-  ] 
 ]
+[:fib 10]
 ```
-# square

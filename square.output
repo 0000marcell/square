@@ -1,40 +1,25 @@
-Nonterminals useless in grammar
-
-    stmts
-    stmt
-    bra
-
-
 Terminals unused in grammar
 
     NUM
     OP
     SEMICOLUMN
-    OPBRA
+    PRINT
     CLBRA
     OTHER
-
-
-Rules useless in grammar
-
-    3 stmts: ε
-    4      | stmt OP stmts
-    5      | stmt stmts
-
-    6 stmt: NUM
-    7     | SEMICOLUMN
-
-    8 bra: OPBRA
-    9    | CLBRA
 
 
 Grammar
 
     0 $accept: prog $end
 
-    1 prog: fcall fcall
+    1 prog: stmts
 
-    2 fcall: PRINT
+    2 stmts: ε
+    3      | stmt stmts
+
+    4 stmt: OPBRA GT IDFUNC
+    5     | ID COM ID COL
+    6     | NLINE
 
 
 Terminals, with rules where they appear
@@ -44,66 +29,141 @@ Terminals, with rules where they appear
     NUM <number> (258)
     OP <character> (259)
     SEMICOLUMN (260)
-    PRINT (261) 2
-    OPBRA (262)
-    CLBRA (263)
-    OTHER (264)
+    PRINT (261)
+    OPBRA <string> (262) 4
+    CLBRA <string> (263)
+    IDFUNC <string> (264) 4
+    GT <string> (265) 4
+    OTHER (266)
+    ID <string> (267) 5
+    COM (268) 5
+    COL (269) 5
+    NLINE (270) 6
 
 
 Nonterminals, with rules where they appear
 
-    $accept (10)
+    $accept (16)
         on left: 0
-    prog (11)
+    prog (17)
         on left: 1
         on right: 0
-    fcall (12)
-        on left: 2
-        on right: 1
+    stmts (18)
+        on left: 2 3
+        on right: 1 3
+    stmt <number> (19)
+        on left: 4 5 6
+        on right: 3
 
 
 State 0
 
     0 $accept: • prog $end
 
-    PRINT  shift, and go to state 1
+    OPBRA  shift, and go to state 1
+    ID     shift, and go to state 2
+    NLINE  shift, and go to state 3
 
-    prog   go to state 2
-    fcall  go to state 3
+    $default  reduce using rule 2 (stmts)
+
+    prog   go to state 4
+    stmts  go to state 5
+    stmt   go to state 6
 
 
 State 1
 
-    2 fcall: PRINT •
+    4 stmt: OPBRA • GT IDFUNC
 
-    $default  reduce using rule 2 (fcall)
+    GT  shift, and go to state 7
 
 
 State 2
 
-    0 $accept: prog • $end
+    5 stmt: ID • COM ID COL
 
-    $end  shift, and go to state 4
+    COM  shift, and go to state 8
 
 
 State 3
 
-    1 prog: fcall • fcall
+    6 stmt: NLINE •
 
-    PRINT  shift, and go to state 1
-
-    fcall  go to state 5
+    $default  reduce using rule 6 (stmt)
 
 
 State 4
+
+    0 $accept: prog • $end
+
+    $end  shift, and go to state 9
+
+
+State 5
+
+    1 prog: stmts •
+
+    $default  reduce using rule 1 (prog)
+
+
+State 6
+
+    3 stmts: stmt • stmts
+
+    OPBRA  shift, and go to state 1
+    ID     shift, and go to state 2
+    NLINE  shift, and go to state 3
+
+    $default  reduce using rule 2 (stmts)
+
+    stmts  go to state 10
+    stmt   go to state 6
+
+
+State 7
+
+    4 stmt: OPBRA GT • IDFUNC
+
+    IDFUNC  shift, and go to state 11
+
+
+State 8
+
+    5 stmt: ID COM • ID COL
+
+    ID  shift, and go to state 12
+
+
+State 9
 
     0 $accept: prog $end •
 
     $default  accept
 
 
-State 5
+State 10
 
-    1 prog: fcall fcall •
+    3 stmts: stmt stmts •
 
-    $default  reduce using rule 1 (prog)
+    $default  reduce using rule 3 (stmts)
+
+
+State 11
+
+    4 stmt: OPBRA GT IDFUNC •
+
+    $default  reduce using rule 4 (stmt)
+
+
+State 12
+
+    5 stmt: ID COM ID • COL
+
+    COL  shift, and go to state 13
+
+
+State 13
+
+    5 stmt: ID COM ID COL •
+
+    $default  reduce using rule 5 (stmt)
