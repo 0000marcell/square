@@ -77,7 +77,13 @@ extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
 int result = 0;
-char operation = '+';
+
+typedef struct {
+  char *key;
+  char value;
+  char *args[100];
+} statement;
+
 typedef struct {
   char *key;
   char *value;
@@ -86,14 +92,15 @@ typedef struct {
 typedef struct {
   char *key;
   arg *args[100];
-  char *body;
+  statement *body[100];
+  int return_value;
 } func;
 
 func funcarr[100] = {};
 
 int funccount = 0;
 
-#line 97 "square.tab.c"
+#line 104 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -466,9 +473,9 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  9
+#define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   10
+#define YYLAST   14
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  16
@@ -477,7 +484,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  7
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  14
+#define YYNSTATES  19
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   270
@@ -528,7 +535,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    46,    46,    49,    50,    52,    56,    67
+       0,    53,    53,    56,    57,    59,    62,    72
 };
 #endif
 
@@ -570,8 +577,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -7,    -9,   -11,   -12,     3,   -12,    -7,    -5,    -6,   -12,
-     -12,   -12,    -4,   -12
+      -7,    -9,   -11,    -8,     3,   -12,    -7,    -3,    -5,     5,
+     -12,   -12,   -12,    -4,    -1,   -12,    -2,     4,   -12
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -579,14 +586,14 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     0,     7,     0,     2,     3,     0,     0,     1,
-       4,     5,     0,     6
+       3,     0,     0,     0,     0,     2,     3,     0,     0,     0,
+       1,     4,     5,     0,     0,     6,     0,     0,     7
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,     1,   -12
+     -12,   -12,     8,   -12
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -600,22 +607,22 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     7,     8,     9,    11,     2,    12,    10,     3,     0,
-      13
+       1,     7,     8,    10,     9,     2,    12,    13,     3,    14,
+      15,    16,    18,    17,    11
 };
 
 static const yytype_int8 yycheck[] =
 {
-       7,    10,    13,     0,     9,    12,    12,     6,    15,    -1,
-      14
+       7,    10,    13,     0,    12,    12,     9,    12,    15,     4,
+      14,    12,     8,    15,     6
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     7,    12,    15,    17,    18,    19,    10,    13,     0,
-      18,     9,    12,    14
+       0,     7,    12,    15,    17,    18,    19,    10,    13,    12,
+       0,    18,     9,    12,     4,    14,    12,    15,     8
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -627,7 +634,7 @@ static const yytype_int8 yyr1[] =
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3,     4,     1
+       0,     2,     1,     0,     2,     3,     4,     6
 };
 
 
@@ -1091,16 +1098,15 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: OPBRA GT IDFUNC  */
-#line 52 "square.y"
+#line 59 "square.y"
                       {
-      printf("3: %s\n", (yyvsp[0].string));
       funcarr[funccount].key = (yyvsp[0].string);
     }
-#line 1100 "square.tab.c"
+#line 1106 "square.tab.c"
     break;
 
   case 6: /* stmt: ID COM ID COL  */
-#line 56 "square.y"
+#line 62 "square.y"
                     {
       arg arg0 = {
         .key = (yyvsp[-3].string)
@@ -1110,21 +1116,26 @@ yyreduce:
       };
       funcarr[funccount].args[0] = &arg0;
       funcarr[funccount].args[1] = &arg1;
-      printf("arg1: %s, arg2: %s\n", funcarr[funccount].args[0]->key, funcarr[funccount].args[1]->key);
     }
-#line 1116 "square.tab.c"
+#line 1121 "square.tab.c"
     break;
 
-  case 7: /* stmt: NLINE  */
-#line 67 "square.y"
-            {
-      printf("NEWLINE!\n");
+  case 7: /* stmt: NLINE ID OP ID NLINE CLBRA  */
+#line 72 "square.y"
+                                 {
+      statement st = {
+        .key = "operation",
+        .value = (yyvsp[-3].character)
+      };
+      st.args[0] = (yyvsp[-4].string);
+      st.args[1] = (yyvsp[-2].string);
+      funcarr[funccount].body[0] = &st;
     }
-#line 1124 "square.tab.c"
+#line 1135 "square.tab.c"
     break;
 
 
-#line 1128 "square.tab.c"
+#line 1139 "square.tab.c"
 
       default: break;
     }
@@ -1317,7 +1328,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 99 "square.y"
+#line 110 "square.y"
 
 
 int yyerror(char *s)
@@ -1330,7 +1341,7 @@ int main() {
     yydebug = 1;
     FILE * pt = fopen("source.sq", "r" );
     if(!pt) {
-      printf("File doesn not exist!!!");
+      printf("File does not exist!!!");
       return -1;
     }
     yyin = pt;

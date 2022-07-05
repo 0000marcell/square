@@ -20,7 +20,7 @@ nline       (\n)
 %%
 
 {numbers}      { yylval.number = atoi(yytext); return (NUM);}
-{operation}    { return (OP);}
+{operation}    { yylval.string = strdup(yytext); return (OP);}
 {print}        { return (PRINT);}
 {op_bra} { 
   yylval.string = strdup(yytext); 
