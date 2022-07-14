@@ -70,6 +70,8 @@
 #line 1 "square.y"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define YYDEBUG 1 // This is new
 
@@ -80,19 +82,20 @@ int result = 0;
 
 typedef struct {
   char *key;
-  char value;
+  char *value;
   char *args[100];
 } statement;
 
 typedef struct {
   char *key;
-  char *value;
+  int  value;
 } arg;
 
 typedef struct {
   char *key;
-  arg *args[100];
-  statement *body[100];
+  int argssize;
+  arg args[100];
+  statement body[100];
   int return_value;
 } func;
 
@@ -100,7 +103,40 @@ func funcarr[100] = {};
 
 int funccount = 0;
 
-#line 104 "square.tab.c"
+func findfunc(char *key) {
+  int res = -1;
+  for(int i = 0; i <= funccount; i++) {
+
+    if(strcmp(funcarr[i].key, key) == 0) {
+      res = i;
+      break;    
+    }
+  }
+  if(res == -1) {
+    printf("could not find func: %s \n", key);
+    exit(1);
+  }
+  return funcarr[res];
+}
+
+arg findargs(func f, char *key) {
+  int asize = f.argssize;
+  int res = -1;
+  for(int i = 0; i < asize; i++) {
+    if(strcmp(f.args[i].key, key) == 0) {
+      res = i;
+      break;    
+    }
+  } 
+  if(res == -1) {
+    printf("could not find arg: %s \n", key);
+    exit(1);
+  }
+  return f.args[res];
+}
+
+
+#line 140 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -473,18 +509,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  10
+#define YYFINAL  12
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   14
+#define YYLAST   29
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  16
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  7
+#define YYNRULES  9
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  19
+#define YYNSTATES  28
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   270
@@ -533,9 +569,9 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    53,    53,    56,    57,    59,    62,    72
+       0,    88,    88,    91,    92,    94,    97,   108,   117,   137
 };
 #endif
 
@@ -563,7 +599,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-12)
+#define YYPACT_NINF (-13)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -577,8 +613,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -7,    -9,   -11,    -8,     3,   -12,    -7,    -3,    -5,     5,
-     -12,   -12,   -12,    -4,    -1,   -12,    -2,     4,   -12
+      -7,    -3,   -12,   -10,     4,   -13,    -7,     6,     7,     2,
+       0,     9,   -13,   -13,     8,     1,   -13,     3,    10,   -13,
+      12,   -13,     5,    11,    13,   -13,    14,   -13
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -587,13 +624,14 @@ static const yytype_int8 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        3,     0,     0,     0,     0,     2,     3,     0,     0,     0,
-       1,     4,     5,     0,     0,     6,     0,     0,     7
+       0,     0,     1,     4,     0,     0,     5,     0,     0,     9,
+       0,     6,     0,     0,     0,     8,     0,     7
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -12,   -12,     8,   -12
+     -13,   -13,    17,   -13
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -607,34 +645,37 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     7,     8,    10,     9,     2,    12,    13,     3,    14,
-      15,    16,    18,    17,    11
+       1,    10,    11,     7,    12,     2,     8,     9,     3,    14,
+      15,    16,    17,    18,    20,    23,    19,    21,     0,    25,
+      24,    26,    22,    13,     0,     0,     0,     0,     0,    27
 };
 
 static const yytype_int8 yycheck[] =
 {
-       7,    10,    13,     0,    12,    12,     9,    12,    15,     4,
-      14,    12,     8,    15,     6
+       7,    13,    12,     6,     0,    12,     9,    10,    15,     3,
+       3,     9,    12,     4,    13,     3,     8,    14,    -1,     8,
+      15,     8,    12,     6,    -1,    -1,    -1,    -1,    -1,    15
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     7,    12,    15,    17,    18,    19,    10,    13,    12,
-       0,    18,     9,    12,     4,    14,    12,    15,     8
+       0,     7,    12,    15,    17,    18,    19,     6,     9,    10,
+      13,    12,     0,    18,     3,     3,     9,    12,     4,     8,
+      13,    14,    12,     3,    15,     8,     8,    15
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    16,    17,    18,    18,    19,    19,    19
+       0,    16,    17,    18,    18,    19,    19,    19,    19,    19
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3,     4,     6
+       0,     2,     1,     0,     2,     3,     4,     7,     6,     4
 };
 
 
@@ -1098,15 +1139,15 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: OPBRA GT IDFUNC  */
-#line 59 "square.y"
+#line 94 "square.y"
                       {
       funcarr[funccount].key = (yyvsp[0].string);
     }
-#line 1106 "square.tab.c"
+#line 1147 "square.tab.c"
     break;
 
   case 6: /* stmt: ID COM ID COL  */
-#line 62 "square.y"
+#line 97 "square.y"
                     {
       arg arg0 = {
         .key = (yyvsp[-3].string)
@@ -1114,28 +1155,62 @@ yyreduce:
       arg arg1 = {
         .key = (yyvsp[-1].string)
       };
-      funcarr[funccount].args[0] = &arg0;
-      funcarr[funccount].args[1] = &arg1;
+      funcarr[funccount].args[0] = arg0;
+      funcarr[funccount].args[1] = arg1;
+      funcarr[funccount].argssize = 2;
     }
-#line 1121 "square.tab.c"
+#line 1163 "square.tab.c"
     break;
 
-  case 7: /* stmt: NLINE ID OP ID NLINE CLBRA  */
-#line 72 "square.y"
-                                 {
+  case 7: /* stmt: NLINE ID OP ID NLINE CLBRA NLINE  */
+#line 108 "square.y"
+                                       {
       statement st = {
         .key = "operation",
-        .value = (yyvsp[-3].character)
+        .value = (yyvsp[-4].string)
       };
-      st.args[0] = (yyvsp[-4].string);
-      st.args[1] = (yyvsp[-2].string);
-      funcarr[funccount].body[0] = &st;
+      st.args[0] = (yyvsp[-5].string);
+      st.args[1] = (yyvsp[-3].string);
+      funcarr[funccount].body[0] = st;
     }
-#line 1135 "square.tab.c"
+#line 1177 "square.tab.c"
+    break;
+
+  case 8: /* stmt: OPBRA IDFUNC NUM COM NUM CLBRA  */
+#line 117 "square.y"
+                                     {
+      printf("%d %d\n", (yyvsp[-3].number), (yyvsp[-1].number));
+      func function = findfunc((yyvsp[-4].string));
+      function.args[0].value = (yyvsp[-3].number);
+      function.args[1].value = (yyvsp[-1].number);
+      char *bkey = function.body[0].key;
+      char *bval = function.body[0].value;
+
+      if(strcmp(bkey, "operation") == 0) {
+        if(strcmp(bval, "+") == 0) {
+          arg a = findargs(function, function.body[0].args[0]);
+          arg b = findargs(function, function.body[0].args[1]);
+          int v1 = a.value;
+          int v2 = b.value;
+          int result = v1 + v2;
+          printf(">>>>>> %d\n", result);
+          function.return_value = result;
+        }
+      }
+    }
+#line 1202 "square.tab.c"
+    break;
+
+  case 9: /* stmt: OPBRA PRINT NUM CLBRA  */
+#line 137 "square.y"
+                            {
+      printf(">>> %d\n", (yyvsp[-1].number));
+    }
+#line 1210 "square.tab.c"
     break;
 
 
-#line 1139 "square.tab.c"
+#line 1214 "square.tab.c"
 
       default: break;
     }
@@ -1328,7 +1403,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 110 "square.y"
+#line 143 "square.y"
 
 
 int yyerror(char *s)

@@ -75,13 +75,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 45 "square.y"
+#line 81 "square.y"
 
     int number;
-    char character;
     char *string;
 
-#line 85 "square.tab.h"
+#line 84 "square.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
