@@ -1,4 +1,5 @@
-[>:fib a,b:
-  a+b
+[>:add a,b:
+  a + b
 ]
-[:fib 1,2]
+
+[:add 3,4]

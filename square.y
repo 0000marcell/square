@@ -8,7 +8,8 @@
 extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
-int result = 0;
+
+int is_body_open = 0;
 
 typedef struct {
   char *key;
@@ -22,6 +23,7 @@ typedef struct {
 } arg;
 
 typedef struct {
+  int id;
   char *key;
   int argssize;
   arg args[100];
@@ -93,8 +95,10 @@ stmts:
 
 stmt: OPBRA GT IDFUNC {
       funcarr[funccount].key = $3;
+      funcarr[funccount].id = funccount;
+      is_body_open = 1;
     }
-    | ID COM ID COL {
+    | ID COM ID COL NLINE {
       arg arg0 = {
         .key = $1
       };
@@ -105,16 +109,13 @@ stmt: OPBRA GT IDFUNC {
       funcarr[funccount].args[1] = arg1;
       funcarr[funccount].argssize = 2;
     }
-    | NLINE ID OP ID NLINE CLBRA NLINE {
-      statement st = {
-        .key = "operation",
-        .value = $3
-      };
-      st.args[0] = $2;
-      st.args[1] = $4;
-      funcarr[funccount].body[0] = st;
+    | NLINE CLBRA NLINE {
+      printf(">>>>>>>> closing function\n");
+      is_body_open = 0;
+      funccount++;
     }
     | OPBRA IDFUNC NUM COM NUM CLBRA {
+      printf("executing the function!!!");
       printf("%d %d\n", $3, $5);
       func function = findfunc($2);
       function.args[0].value = $3;
@@ -136,6 +137,21 @@ stmt: OPBRA GT IDFUNC {
     } 
     | OPBRA PRINT NUM CLBRA {
       printf(">>> %d\n", $3);
+    }
+    | ID OP ID {
+      statement st = {
+        .key = "operation",
+        .value = $2
+      };
+      st.args[0] = $1;
+      st.args[1] = $3;
+      printf(">>>>>> %s\n", st.args[0]);
+      if(is_body_open == 1) {
+        funcarr[funccount].body[0] = st;
+      }
+    } 
+    | NLINE {
+      printf("do nothing!!!\n");
     }
 ;
 
