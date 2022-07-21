@@ -15,6 +15,6 @@ struct scope {
   int return_value;
 };
 
-void exec(struct scope global);
+void exec(struct scope * global);
 
 #endif
