@@ -66,7 +66,8 @@ extern int yydebug;
     ID = 267,                      /* ID  */
     COM = 268,                     /* COM  */
     COL = 269,                     /* COL  */
-    NLINE = 270                    /* NLINE  */
+    NLINE = 270,                   /* NLINE  */
+    EQ = 271                       /* EQ  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -75,12 +76,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 83 "square.y"
+#line 86 "square.y"
 
     int number;
     char *string;
 
-#line 84 "square.tab.h"
+#line 85 "square.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

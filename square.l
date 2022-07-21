@@ -15,6 +15,7 @@ cl_bra      ([\]])
 idfunc      (\:[a-z]+)
 identifier  ([a-z]+)
 nline       (\n)
+equal       ([=])
 
 
 %%
@@ -46,6 +47,7 @@ nline       (\n)
   return (ID); 
 }
 {nline} { return (NLINE); }
+{equal} { return (EQ); }
 
 %%
 

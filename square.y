@@ -27,19 +27,22 @@ typedef struct {
   char *key;
   int argssize;
   arg args[100];
-  statement body[100];
+  int bodysize;
+  func body[100];
   int return_value;
 } func;
 
-func funcarr[100] = {};
-
-int funccount = 0;
+func global = {
+  .key = "global",
+  .argssize = 0,
+  .bodysize = 0,
+}
 
 func findfunc(char *key) {
   int res = -1;
-  for(int i = 0; i <= funccount; i++) {
-
-    if(strcmp(funcarr[i].key, key) == 0) {
+  bodysize = global.bodysize;
+  for(int i = 0; i <= bodysize; i++) {
+    if(strcmp(global.body[i].key, key) == 0) {
       res = i;
       break;    
     }
@@ -69,7 +72,7 @@ arg findargs(func f, char *key) {
 
 %}
 
-%token NUM OP SEMICOLUMN PRINT OPBRA CLBRA IDFUNC GT OTHER ID COM COL NLINE
+%token NUM OP SEMICOLUMN PRINT OPBRA CLBRA IDFUNC GT OTHER ID COM COL NLINE EQ
 
 %type <number> NUM
 %type <string> IDFUNC 
@@ -137,6 +140,14 @@ stmt: OPBRA GT IDFUNC {
     } 
     | OPBRA PRINT NUM CLBRA {
       printf(">>> %d\n", $3);
+    }
+    | ID EQ NUM {
+      if(is_body_open == 1) {
+      } else {
+        funcarr[funccount].key = "global";
+        funcarr[funccount].id = funccount;
+        funcarr[funccount].id = funccount;
+      }
     }
     | ID OP ID {
       statement st = {

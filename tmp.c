@@ -8,76 +8,72 @@ typedef struct {
   char *args[100];
 } statement;
 
+
+int funccount = 0;
+
+/* { */
+/*   key: "global", */ 
+/*   argssize: 1, */
+/*   arg: [ */
+/*     { */
+/*       key: "a", */
+/*       value: 1 */
+/*     } */
+/*   ], */
+/*   body: [ */
+/*     { */
+/*       key: "if", */
+/*       condition: 1, // this going to be evaluated at combile time */ 
+/*       body: [ */
+/*         { */
+/*           { */
+/*             key: ":print", */
+/*             value: 99 */
+/*           } */
+/*         } */
+/*       ] */
+/*     } */
+/*   ] */
+/* } */
+
 typedef struct {
   char *key;
   int  value;
 } arg;
 
-typedef struct {
-  char *key;
-  int argssize;
+struct scope {
+  char * type;
   arg args[100];
-  statement body[100];
+  int value;
+  struct scope *scopes[100];
   int return_value;
-} func;
-
-func funcarr[100] = {};
-
-int funccount = 0;
-
-func findfunc(char *key) {
-  int res = -1;
-  for(int i = 0; i <= funccount; i++) {
-
-    if(strcmp(funcarr[i].key, key) == 0) {
-      res = i;
-      break;    
-    }
-  }
-  if(res == -1) {
-    printf("could not find func!!!\n");
-    exit(1);
-  }
-  return funcarr[res];
-}
-
-arg findargs(func f, char *key) {
-  int asize = f.argssize;
-  int res;
-  for(int i = 0; i < asize; i++) {
-    if(strcmp(f.args[i].key,key) == 0) {
-      res = i;
-      break;    
-    }
-  } 
-  return f.args[res];
-}
+};
 
 int main() {
-
-  func function = {
-    .key = ":fib",
-    .argssize = 2,
-  };
-
-  arg arg0 = {
-    .key = "a"
-  };
-
+  struct scope global; 
+  global.type = "global"; 
+  struct scope fibfunc;
+  fibfunc.type = "fib";
   arg arg1 = {
-    .key = "b"
+    .key = "n",
+    .value = 10
   };
-
-  function.args[0] = arg0;
-  function.args[1] = arg1;
-  funcarr[0] = function;
-
-  statement ss = {
-    .key = "operation",
-    .value = "+",
-  };
-
-  funcarr[0].body[0] = ss;
-
-  printf("%s\n", funcarr[0].body[0].key);
+  fibfunc.args[0] = arg1;
+  global.scopes[0] = &fibfunc;
+  struct scope ifst;
+  ifst.type = "if";
+  ifst.value = 1;
+  struct scope nst; 
+  nst.type = "number";
+  nst.value = 0;
+  ifst.scopes[0] = &nst;
+  fibfunc.scopes[0] = &ifst;
+  printf("%s\n", ifst.type);
+  /* a.data = 1; */
+  /* a.data2 = 2; */
+  /* struct scope b; */
+  /* b.data = 99; */
+  /* b.data2 = 88; */
+  /* a.to_test[0] = &b; */
+  /* printf("%d\n", a.to_test[0]->data); */
 }
