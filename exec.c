@@ -10,7 +10,15 @@ int traverse(struct scope * node) {
   if(node->scopescount > 0) {
     int i = 0;
     while(i < node->scopescount) {
-      int result = traverse(node->scopes[i]);
+      int result;
+      // I only execute the body if the value is 1
+      if(strcmp(node->type, "if") == 0) {
+        if(node->value == 1) {
+          result = traverse(node->scopes[i]);
+        }
+      } else {
+        result = traverse(node->scopes[i]);
+      }
       // check if it is the last value of the array
       if(i == (node->scopescount - 1)) {
         node->return_value = result;
