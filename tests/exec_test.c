@@ -6,7 +6,38 @@
 void first_case() {
   // function with one if statement returning 99
   printf("running tests...\n");
-  struct scope global; 
+  struct scope global = {
+    .type = "global",
+    .scopescount = 1,
+    .scopes = {
+      &(struct scope) {
+        .type = "fib",
+        .args = {
+          {
+            .key = "n",
+            .value = 1 
+          }
+        },
+        .scopescount = 1,
+        .scopes = {
+          &(struct scope) {
+            .type = "if",
+            .value = 1,
+            .scopescount = 1,
+            .scopes = {
+              &(struct scope) {
+                .type = "number",
+                .value = 0
+              }
+            },
+            .return_value = 99
+          },
+          .return_value = 99
+        },
+        .return_value = 99
+      }
+    }
+  }; 
   global.type = "global"; 
   struct scope fibfunc;
   fibfunc.type = "fib";
@@ -64,6 +95,7 @@ void second_case() {
   nst2.type = "number";
   nst2.value = 99;
   ifst2.scopes[0] = &nst2;
+  ifst2.scopescount = 1;
   fibfunc.scopes[1] = &ifst2;
   fibfunc.scopescount = 2;
   exec(&global);

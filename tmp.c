@@ -11,7 +11,7 @@ struct scope {
   char * type;
   arg args[100];
   int value;
-  struct scope *scopes[100];
+  struct scope * scopes[100];
   int return_value;
 };
 
@@ -26,8 +26,18 @@ void c2(int a[100]) {
 
 
 int main() {
-  int b[100];
-  b[0] = -1;
-  c2(b);
-  printf("%d\n", b[0]);
+  struct scope scopes[2] = {
+    { 
+      .type = "testing"
+    }, 
+    {
+      .type = "ok",
+      .scopes = {
+        &((struct scope){
+          .type = "if"
+        })
+      }
+    }
+  };
+  printf("%s\n", scopes[1].scopes[0]->type);
 }
