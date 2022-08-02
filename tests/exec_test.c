@@ -95,7 +95,7 @@ void second_case() {
   assert(global.scopes[0]->return_value == 1);
 }
 
-void third_case() {
+void recursive_case() {
   // function with recursive calls, fib > 2
   printf("running tests...\n");
   struct scope global = {
@@ -110,7 +110,7 @@ void third_case() {
             .value = 1 
           }
         },
-        .scopescount = 2,
+        .scopescount = 1,
         .scopes = {
           &(struct scope) {
             .type = "if",
@@ -118,9 +118,42 @@ void third_case() {
             .scopescount = 1,
             .scopes = {
               &(struct scope) {
-                .type = "number",
-                .value = 0
-              }
+                .type = "n",
+              },
+              &(struct scope) {
+                .type = "<",
+                .value = 2
+              },
+              &(struct scope) {
+                .type = "print",
+                .scopescount = 1,
+                &(struct scope) {
+                  .type = "n",
+                  .value = 2
+                },
+              },
+              &(struct scope) {
+                .type = "assignment",
+                .scopescount = 1,
+                .scopes = {
+                  &(struct scope) {
+                    .type = "n",
+                    .value = 2
+                  },
+                  &(struct scope) {
+                    .type = "add",
+                    .value = 2,
+                    .scopescount = 2,
+                    .scopes = {
+
+                    } 
+                  },
+                  &(struct scope) {
+                    .type = "number",
+                    .value = 1
+                  },
+                },
+              },
             },
             .return_value = 99
           },
