@@ -95,6 +95,59 @@ void second_case() {
   assert(global.scopes[0]->return_value == 1);
 }
 
+void if_case() {
+  printf("running tests >>>>>>>>>>>\n");
+  struct scope global = {
+    .type = "function",
+    .extra = "global",
+    .scopescount = 1,
+    .return_value = 0,
+    .argscount = 1,
+    .args = {
+      {
+        .key = "n",
+        .value = 1 
+      }
+    },
+    .scopes = {
+      &(struct scope) {
+        .type = "if",
+        .scopescount = 2,
+        .scopes = {
+          &(struct scope) {
+            .type = "comp",
+            .extra = "<",
+            .scopescount = 2,
+            .scopes = {
+              &(struct scope) {
+                .type = "iden",
+                .extra = "n"
+              },
+              &(struct scope) {
+                .type = "number",
+                .value = 2
+              },
+            }
+          },
+          &(struct scope) {
+            .type = "body",
+            .scopescount = 1,
+            .scopes = {
+              &(struct scope) {
+                .type = "number",
+                .value = 999
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+  exec(&global);
+  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
+  assert(global.scopes[0]->return_value == 999);
+}
+
 void recursive_case() {
   // function with recursive calls, fib > 2
   printf("running tests...\n");
@@ -114,70 +167,59 @@ void recursive_case() {
         .scopes = {
           &(struct scope) {
             .type = "if",
-            .value = 0,
-            .scopescount = 1,
+            .scopescount = 4,
             .scopes = {
               &(struct scope) {
-                .type = "n",
-              },
-              &(struct scope) {
-                .type = "<",
-                .value = 2
+                .type = "comp",
+                .extra = "<",
+                .scopescount = 2,
+                .scopes = {
+                  &(struct scope) {
+                    .type = "iden",
+                    .extra = "n"
+                  },
+                  &(struct scope) {
+                    .type = "number",
+                    .value = 2
+                  },
+                }
               },
               &(struct scope) {
                 .type = "print",
                 .scopescount = 1,
                 &(struct scope) {
-                  .type = "n",
-                  .value = 2
+                  .type = "iden",
+                  .extra = "n"
                 },
               },
               &(struct scope) {
                 .type = "assignment",
-                .scopescount = 1,
+                .scopescount = 2,
                 .scopes = {
                   &(struct scope) {
-                    .type = "n",
-                    .value = 2
+                    .type = "iden",
+                    .extra = "n"
                   },
                   &(struct scope) {
                     .type = "add",
-                    .value = 2,
                     .scopescount = 2,
                     .scopes = {
-
-                    } 
-                  },
-                  &(struct scope) {
-                    .type = "number",
-                    .value = 1
+                      &(struct scope) {
+                        .type = "iden",
+                        .extra = "n"
+                      },
+                      &(struct scope) {
+                        .type = "number",
+                        .value = 1
+                      },
+                    },
                   },
                 },
               },
-            },
-            .return_value = 99
-          },
-          &(struct scope) {
-            .type = "if",
-            .value = 0,
-            .scopescount = 1,
-            .scopes = {
               &(struct scope) {
-                .type = "number",
-                .value = 1
-              }
-            },
-            .return_value = 99
-          },
-          &(struct scope) {
-            .type = "if",
-            .value = 1,
-            .scopescount = 1,
-            .scopes = {
-              &(struct scope) {
-                .type = "number",
-                .value = 1
-              }
+                .type = "fcall",
+                .extra = "fib"
+              },
             },
             .return_value = 99
           },
@@ -198,6 +240,6 @@ int main() {
   // function with two if statements second one returning 99 first returning 0
   //second_case();
 
-  third_case();
+  recursive_case();
   return 0;
 }

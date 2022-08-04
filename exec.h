@@ -8,6 +8,8 @@ typedef struct {
 
 struct scope {
   char * type;
+  char * extra;
+  int argscount;
   arg args[100];
   int value;
   int scopescount;

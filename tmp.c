@@ -26,18 +26,6 @@ void c2(int a[100]) {
 
 
 int main() {
-  struct scope scopes[2] = {
-    { 
-      .type = "testing"
-    }, 
-    {
-      .type = "ok",
-      .scopes = {
-        &((struct scope){
-          .type = "if"
-        })
-      }
-    }
-  };
-  printf("%s\n", scopes[1].scopes[0]->type);
+  int v1;
+  printf("v1: %d\n", v1);
 }
