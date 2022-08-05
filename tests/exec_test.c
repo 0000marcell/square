@@ -172,8 +172,8 @@ void assignment_case() {
             .extra = "n"
           },
           &(struct scope) {
-            .type = "iden",
-            .extra = "n"
+            .type = "number",
+            .value = 999
           },
         }
       }
@@ -181,7 +181,7 @@ void assignment_case() {
   };
   exec(&global);
   printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.scopes[0]->return_value == 999);
+  assert(global.args[0].value == 999);
 }
 
 void recursive_case() {
