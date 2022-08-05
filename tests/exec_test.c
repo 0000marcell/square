@@ -148,6 +148,42 @@ void if_case() {
   assert(global.scopes[0]->return_value == 999);
 }
 
+void assignment_case() {
+  printf("running tests >>>>>>>>>>>\n");
+  struct scope global = {
+    .type = "function",
+    .extra = "global",
+    .scopescount = 1,
+    .return_value = 0,
+    .argscount = 1,
+    .args = {
+      {
+        .key = "n",
+        .value = 1 
+      }
+    },
+    .scopes = {
+      &(struct scope) {
+        .type = "assignment",
+        .scopescount = 2,
+        .scopes = {
+          &(struct scope) {
+            .type = "iden",
+            .extra = "n"
+          },
+          &(struct scope) {
+            .type = "iden",
+            .extra = "n"
+          },
+        }
+      }
+    }
+  };
+  exec(&global);
+  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
+  assert(global.scopes[0]->return_value == 999);
+}
+
 void recursive_case() {
   // function with recursive calls, fib > 2
   printf("running tests...\n");
@@ -182,14 +218,16 @@ void recursive_case() {
                     .type = "number",
                     .value = 2
                   },
-                }
+                },
               },
               &(struct scope) {
                 .type = "print",
                 .scopescount = 1,
-                &(struct scope) {
-                  .type = "iden",
-                  .extra = "n"
+                .scopes = {
+                  &(struct scope) {
+                    .type = "iden",
+                    .extra = "n"
+                  },
                 },
               },
               &(struct scope) {
@@ -239,7 +277,10 @@ int main() {
   //first_case();
   // function with two if statements second one returning 99 first returning 0
   //second_case();
-
-  recursive_case();
+  
+  // function with a if statement executing the if statement
+  //if_case();
+  // function with a assignment case
+  assignment_case();
   return 0;
 }

@@ -4,10 +4,19 @@
 
 int find_iden(char * str, arg * args, int argscount) {
   int i = 0;
+  int result;
+  int didfind = 0;
   while(i < argscount) {
-
+    if(strcmp(args[i].key, str) == 0) {
+      result = args[i].value;
+      didfind = 1;
+      break;
+    }
   }
-  return 1;
+  if(didfind == 0) {
+    printf("ERROR: could not find arg: %s\n", str);
+  }
+  return result;
 }
 
 int traverse(struct scope * node, arg * args, int argscount) {
@@ -20,8 +29,10 @@ int traverse(struct scope * node, arg * args, int argscount) {
     while(i < node->scopescount) {
       int result;
       if(strcmp(node->type, "if") == 0) {
+        printf("enter if!!!\n");
         struct scope * comp = node->scopes[0];
         struct scope * body = node->scopes[1];
+        i++;
         if(strcmp(comp->extra, "<") == 0) {
           int v1;
           int v2;
