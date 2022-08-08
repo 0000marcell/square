@@ -173,7 +173,7 @@ void assignment_case() {
           },
           &(struct scope) {
             .type = "number",
-            .value = 999
+            .value = 997
           },
         }
       }
@@ -181,7 +181,7 @@ void assignment_case() {
   };
   exec(&global);
   printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.args[0].value == 999);
+  assert(global.args[0].value == 997);
 }
 
 void recursive_case() {
@@ -279,7 +279,7 @@ int main() {
   //second_case();
   
   // function with a if statement executing the if statement
-  //if_case();
+  if_case();
   // function with a assignment case
   assignment_case();
   return 0;

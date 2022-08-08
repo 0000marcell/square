@@ -23,9 +23,26 @@ void c2(int a[100]) {
   a[0] = 99;
 }
 
-
+arg find_iden(char * str, arg * args, int argscount) {
+  int i = 0;
+  arg result;
+  int didfind = 0;
+  while(i < argscount) {
+    if(strcmp(args[i].key, str) == 0) {
+      result = args[i];
+      didfind = 1;
+      break;
+    }
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not find arg: %s\n", str);
+    exit(1);
+  }
+  return result;
+}
 
 int main() {
-  int v1;
-  printf("v1: %d\n", v1);
+  int a[10];
+  int result = a[8] * 37;
+  printf("result: %d\n", result);
 }

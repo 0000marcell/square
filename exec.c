@@ -1,23 +1,23 @@
 #include <stdio.h>
 #include <string.h>
 #include "exec.h"
+#include <stdlib.h>
 
 
-///
-
-int find_iden(char * str, arg * args, int argscount) {
+arg * find_iden(char * str, arg * args, int argscount) {
   int i = 0;
-  int result;
+  arg * result;
   int didfind = 0;
   while(i < argscount) {
     if(strcmp(args[i].key, str) == 0) {
-      result = args[i].value;
+      result = &args[i];
       didfind = 1;
       break;
     }
   }
   if(didfind == 0) {
     printf("ERROR: could not find arg: %s\n", str);
+    exit(1);
   }
   return result;
 }
@@ -31,30 +31,47 @@ int traverse(struct scope * node, arg * args, int argscount) {
     int i = 0;
     while(i < node->scopescount) {
       int result;
+      // case if body
+      if(strcmp(node->type, "body") == 0){
+        result = traverse(node->scopes[i], args, argscount);
+      }
+      // case global function 
+      if(strcmp(node->type, "function") == 0 &&
+         strcmp(node->extra, "global") == 0) {
+        result = traverse(node->scopes[i], args, argscount);
+      }
+      // case if
       if(strcmp(node->type, "if") == 0) {
-        printf("enter if!!!\n");
         struct scope * comp = node->scopes[0];
         struct scope * body = node->scopes[1];
-        i++;
         if(strcmp(comp->extra, "<") == 0) {
           int v1;
           int v2;
           if(strcmp(comp->scopes[0]->type, "iden") == 0) {
-            v1 = find_iden(comp->scopes[0]->extra,args, argscount);
+            v1 = find_iden(comp->scopes[0]->extra,args, argscount)->value;
           } else {
             v1 = comp->scopes[0]->value;
           }
           if(strcmp(comp->scopes[1]->type, "iden") == 0) {
-            v2 = find_iden(comp->scopes[1]->extra,args, argscount);
+            v2 = find_iden(comp->scopes[1]->extra,args, argscount)->value;
           } else {
             v2 = comp->scopes[1]->value;
           }
           if(v1 < v2) {
+            // exectuts the body
             result = traverse(body, args, argscount);
           }
         }
-      } else {
-        result = traverse(node->scopes[i], args, argscount);
+      }
+      // case assignment
+      if(strcmp(node->type, "assignment") == 0) {
+        if(strcmp(node->scopes[0]->type, "iden") == 0) {
+          arg * iden = find_iden(node->scopes[0]->extra, args, argscount); 
+          iden->value =  node->scopes[1]->value;
+        } else {
+          printf("ERROR: assigning to a non identifier!\n");
+          exit(1);
+        }
       }
       // check if it is the last value of the array
       if(i == (node->scopescount - 1)) {
