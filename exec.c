@@ -22,6 +22,27 @@ arg * find_iden(char * str, arg * args, int argscount) {
   return result;
 }
 
+struct scope * GLOBAL_SCOPE;
+
+struct scope * find_func(char * fname) {
+  int i = 0;
+  struct scope * result;
+  int didfind = 0;
+  while(i < GLOBAL_SCOPE->scopescount) {
+    if(strcmp(GLOBAL_SCOPE->scopes[i]->type, "function") == 0 &&
+       strcmp(GLOBAL_SCOPE->scopes[i]->extra, fname) == 0) {
+      result = GLOBAL_SCOPE->scopes[i];
+      didfind = 1;
+      break;
+    }
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not find function with name: %s\n", fname);
+    exit(1);
+  }
+  return result;
+}
+
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
   if(strcmp(node->type, "number") == 0) {
@@ -37,8 +58,14 @@ int traverse(struct scope * node, arg * args, int argscount) {
       }
       // case global function 
       if(strcmp(node->type, "function") == 0 &&
-         strcmp(node->extra, "global") == 0) {
+        strcmp(node->extra, "global") == 0) {
         result = traverse(node->scopes[i], args, argscount);
+      }
+      // case fcall 
+      if(strcmp(node->type, "fcall") == 0){
+        struct scope * func = find_func(node->extra);
+        update_args(func->args, node->args);
+        result = traverse(func->scopes, args, argscount);
       }
       // case if
       if(strcmp(node->type, "if") == 0) {
@@ -84,5 +111,6 @@ int traverse(struct scope * node, arg * args, int argscount) {
 }
 
 void exec(struct scope * global) {
+  GLOBAL_SCOPE = global;
   traverse(global, global->args, global->argscount);
 }
