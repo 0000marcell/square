@@ -212,8 +212,14 @@ void fcall_case() {
         },
         .scopes = {
           &(struct scope) {
-            .type = "iden",
-            .extra = "n",
+            .type = "body",
+            .scopescount = 1,
+            .scopes = {
+              &(struct scope) {
+                .type = "iden",
+                .extra = "n",
+              }
+            }
           }
         }
       },
@@ -339,9 +345,9 @@ int main() {
   //second_case();
   
   // if statement executing the if statement
-  if_case();
+  //if_case();
   // assignment case
-  assignment_case();
+  //assignment_case();
 
   // function call case
   fcall_case();

@@ -43,6 +43,19 @@ struct scope * find_func(char * fname) {
   return result;
 }
 
+void update_args(struct scope * fscope, struct scope * nscope) {
+  int i = 0;
+  while(i < fscope->argscount) {
+    int j = 0;
+    while(j < nscope->argscount) {
+      if(strcmp(fscope->args[i].key, nscope->args[j].key) == 0) {
+        fscope->args[i].key = nscope->args[j].key;
+        fscope->args[i].value = nscope->args[j].value;
+      }
+    }
+  }
+}
+
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
   if(strcmp(node->type, "number") == 0) {
@@ -64,8 +77,9 @@ int traverse(struct scope * node, arg * args, int argscount) {
       // case fcall 
       if(strcmp(node->type, "fcall") == 0){
         struct scope * func = find_func(node->extra);
-        update_args(func->args, node->args);
-        result = traverse(func->scopes, args, argscount);
+        update_args(func, node);
+        // func->scopes[0] is always the body of the function
+        result = traverse(func->scopes[0], args, argscount);
       }
       // case if
       if(strcmp(node->type, "if") == 0) {
@@ -94,7 +108,19 @@ int traverse(struct scope * node, arg * args, int argscount) {
       if(strcmp(node->type, "assignment") == 0) {
         if(strcmp(node->scopes[0]->type, "iden") == 0) {
           arg * iden = find_iden(node->scopes[0]->extra, args, argscount); 
-          iden->value =  node->scopes[1]->value;
+
+          if(strcmp(node->scopes[1]->type, "number") == 0) {
+            iden->value =  node->scopes[1]->value;
+          }
+
+          if(strcmp(node->scopes[1]->type, "fcall") == 0) {
+            struct scope * func = find_func(node->extra);
+            update_args(func, node);
+            i++; // skip the next thing because we're calling traverse here
+            // func->scopes[0] is always the body of the function
+            result = traverse(func->scopes[0], args, argscount);
+
+          }
         } else {
           printf("ERROR: assigning to a non identifier!\n");
           exit(1);
