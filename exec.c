@@ -35,6 +35,7 @@ struct scope * find_func(char * fname) {
       didfind = 1;
       break;
     }
+    i++;
   }
   if(didfind == 0) {
     printf("ERROR: could not find function with name: %s\n", fname);
@@ -52,12 +53,17 @@ void update_args(struct scope * fscope, struct scope * nscope) {
         fscope->args[i].key = nscope->args[j].key;
         fscope->args[i].value = nscope->args[j].value;
       }
+      j++;
     }
+    i++;
   }
 }
 
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
+  if(strcmp(node->type, "iden") == 0) {
+    return find_iden(node->extra, args, argscount)->value;
+  }
   if(strcmp(node->type, "number") == 0) {
     return node->value;
   }
@@ -79,7 +85,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
         struct scope * func = find_func(node->extra);
         update_args(func, node);
         // func->scopes[0] is always the body of the function
-        result = traverse(func->scopes[0], args, argscount);
+        result = traverse(func->scopes[0], func->args, func->argscount);
       }
       // case if
       if(strcmp(node->type, "if") == 0) {
@@ -114,12 +120,11 @@ int traverse(struct scope * node, arg * args, int argscount) {
           }
 
           if(strcmp(node->scopes[1]->type, "fcall") == 0) {
-            struct scope * func = find_func(node->extra);
-            update_args(func, node);
-            i++; // skip the next thing because we're calling traverse here
+            struct scope * func = find_func(node->scopes[1]->extra);
+            update_args(func, node->scopes[1]);
             // func->scopes[0] is always the body of the function
-            result = traverse(func->scopes[0], args, argscount);
-
+            result = traverse(func->scopes[0], func->args, func->argscount);
+            iden->value = result;
           }
         } else {
           printf("ERROR: assigning to a non identifier!\n");

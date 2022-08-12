@@ -233,6 +233,7 @@ void fcall_case() {
           },
           &(struct scope) {
             .type = "fcall",
+            .extra = "fib",
             .argscount = 1,
             .args = {
               {
