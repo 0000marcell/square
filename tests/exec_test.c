@@ -184,6 +184,8 @@ void assignment_case() {
   assert(global.args[0].value == 997);
 }
 
+
+
 void fcall_case() {
   printf("running tests >>>>>>>>>>>\n");
   struct scope global = {
@@ -241,6 +243,88 @@ void fcall_case() {
                 .value = 777
               }
             }
+          }
+        }
+      }
+    }
+  };
+  exec(&global);
+  printf(">>>>> args value %d\n", global.args[0].value);
+  assert(global.args[0].value == 777);
+}
+
+void add_case() {
+  printf("running tests >>>>>>>>>>>\n");
+  struct scope global = {
+    .type = "function",
+    .extra = "global",
+    .scopescount = 2,
+    .return_value = 0,
+    .argscount = 1,
+    .args = {
+      {
+        .key = "x",
+        .value = 999
+      }
+    },
+    .scopes = {
+      &(struct scope) {
+        .type = "function",
+        .extra = "fib",
+        .scopescount = 1,
+        .argscount = 1,
+        .args = {
+          {
+            .key = "n",
+            .value = 888 
+          }
+        },
+        .scopes = {
+          &(struct scope) {
+            .type = "body",
+            .scopescount = 2,
+            .scopes = {
+              &(struct scope) {
+                .type = "assignment",
+                .scopescount = 2,
+                .scopes = {
+                  &(struct scope) {
+                    .type = "iden",
+                    .extra = "n"
+                  },
+                  &(struct scope) {
+                    .type = "binary_op",
+                    .extra = "+",
+                    .scopescount = 2,
+                    .scopes = {
+                      &(struct scope) {
+                        .type = "iden",
+                        .extra = "n"
+                      },
+                      &(struct scope) {
+                        .type = "number",
+                        .value = 1
+                      }
+                    }
+                  }
+                }
+              },
+              &(struct scope) {
+                .type = "iden",
+                .extra = "n"
+              }
+            }
+          }
+        }
+      },
+      &(struct scope) {
+        .type = "fcall",
+        .extra = "fib",
+        .argscount = 1,
+        .args = {
+          {
+            .key = "n",
+            .value = 777
           }
         }
       }
@@ -346,9 +430,9 @@ int main() {
   //second_case();
   
   // if statement executing the if statement
-  //if_case();
+  if_case();
   // assignment case
-  //assignment_case();
+  assignment_case();
 
   // function call case
   fcall_case();
