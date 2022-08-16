@@ -59,6 +59,21 @@ void update_args(struct scope * fscope, struct scope * nscope) {
   }
 }
 
+int find_bin_op(struct scope * node, arg * args, int argscount) {
+  int result;
+  if(strcmp(node->type, "iden") == 0) {
+    result = find_iden(node->extra, args, argscount)->value;
+  } else {
+    if(strcmp(node->type, "number") == 0) {
+      result = node->value;
+    } else {
+      printf("ERROR: invalid binary_op item: %s\n", node->type);
+      exit(1);
+    }
+  }
+  return result;
+}
+
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
   if(strcmp(node->type, "iden") == 0) {
@@ -66,6 +81,13 @@ int traverse(struct scope * node, arg * args, int argscount) {
   }
   if(strcmp(node->type, "number") == 0) {
     return node->value;
+  }
+  if(strcmp(node->type, "fcall") == 0){
+    struct scope * func = find_func(node->extra);
+    update_args(func, node);
+    // func->scopes[0] is always the body of the function
+    node->return_value = traverse(func->scopes[0], func->args, func->argscount);
+    return node->return_value;
   }
   if(node->scopescount > 0) {
     int i = 0;
@@ -79,6 +101,14 @@ int traverse(struct scope * node, arg * args, int argscount) {
       if(strcmp(node->type, "function") == 0 &&
         strcmp(node->extra, "global") == 0) {
         result = traverse(node->scopes[i], args, argscount);
+      }
+      // case binary_op
+      if(strcmp(node->type, "binary_op") == 0){
+        int v1 = find_bin_op(node->scopes[0], args, argscount);    
+        int v2 = find_bin_op(node->scopes[1], args, argscount);
+        if(strcmp(node->extra, "+") == 0) {
+          result = v1 + v2;
+        }
       }
       // case fcall 
       if(strcmp(node->type, "fcall") == 0){
@@ -124,6 +154,11 @@ int traverse(struct scope * node, arg * args, int argscount) {
             update_args(func, node->scopes[1]);
             // func->scopes[0] is always the body of the function
             result = traverse(func->scopes[0], func->args, func->argscount);
+            iden->value = result;
+          }
+
+          if(strcmp(node->scopes[1]->type, "binary_op") == 0) {
+            result = traverse(node->scopes[1], args, argscount);
             iden->value = result;
           }
         } else {

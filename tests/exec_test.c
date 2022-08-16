@@ -253,25 +253,17 @@ void fcall_case() {
   assert(global.args[0].value == 777);
 }
 
-void add_case() {
+void binary_op_case() {
   printf("running tests >>>>>>>>>>>\n");
   struct scope global = {
     .type = "function",
     .extra = "global",
     .scopescount = 2,
     .return_value = 0,
-    .argscount = 1,
-    .args = {
-      {
-        .key = "x",
-        .value = 999
-      }
-    },
     .scopes = {
       &(struct scope) {
         .type = "function",
         .extra = "fib",
-        .scopescount = 1,
         .argscount = 1,
         .args = {
           {
@@ -279,6 +271,7 @@ void add_case() {
             .value = 888 
           }
         },
+        .scopescount = 1,
         .scopes = {
           &(struct scope) {
             .type = "body",
@@ -324,15 +317,16 @@ void add_case() {
         .args = {
           {
             .key = "n",
-            .value = 777
+            .value = 1
           }
-        }
+        },
+        .return_value = 777
       }
     }
   };
   exec(&global);
-  printf(">>>>> args value %d\n", global.args[0].value);
-  assert(global.args[0].value == 777);
+  printf(">>>>> return value %d\n", global.return_value);
+  assert(global.return_value == 2);
 }
 
 void recursive_case() {
@@ -430,12 +424,15 @@ int main() {
   //second_case();
   
   // if statement executing the if statement
-  if_case();
+  //if_case();
   // assignment case
-  assignment_case();
+  //assignment_case();
 
   // function call case
-  fcall_case();
+  //fcall_case();
+
+  // binary_op case 
+  binary_op_case();
 
   return 0;
 }
