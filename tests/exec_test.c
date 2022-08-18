@@ -144,8 +144,8 @@ void if_case() {
     }
   };
   exec(&global);
-  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.scopes[0]->return_value == 999);
+  printf(">>>>> return_value %d\n", global.return_value);
+  assert(global.return_value == 999);
 }
 
 void assignment_case() {
@@ -347,44 +347,16 @@ void recursive_case() {
         .scopescount = 1,
         .scopes = {
           &(struct scope) {
-            .type = "if",
-            .scopescount = 4,
+            .type = "body",
+            .scopescount = 2,
             .scopes = {
               &(struct scope) {
-                .type = "comp",
-                .extra = "<",
+                .type = "if",
                 .scopescount = 2,
                 .scopes = {
                   &(struct scope) {
-                    .type = "iden",
-                    .extra = "n"
-                  },
-                  &(struct scope) {
-                    .type = "number",
-                    .value = 2
-                  },
-                },
-              },
-              &(struct scope) {
-                .type = "print",
-                .scopescount = 1,
-                .scopes = {
-                  &(struct scope) {
-                    .type = "iden",
-                    .extra = "n"
-                  },
-                },
-              },
-              &(struct scope) {
-                .type = "assignment",
-                .scopescount = 2,
-                .scopes = {
-                  &(struct scope) {
-                    .type = "iden",
-                    .extra = "n"
-                  },
-                  &(struct scope) {
-                    .type = "add",
+                    .type = "comp",
+                    .extra = "<",
                     .scopescount = 2,
                     .scopes = {
                       &(struct scope) {
@@ -393,19 +365,63 @@ void recursive_case() {
                       },
                       &(struct scope) {
                         .type = "number",
-                        .value = 1
+                        .value = 2
                       },
                     },
                   },
+                  &(struct scope) {
+                    .type = "body",
+                    .scopescount = 2,
+                    .scopes = {
+                      &(struct scope) {
+                        .type = "assignment",
+                        .scopescount = 2,
+                        .scopes = {
+                          &(struct scope) {
+                            .type = "iden",
+                            .extra = "n"
+                          },
+                          &(struct scope) {
+                            .type = "binary_op",
+                            .extra = "+",
+                            .scopescount = 2,
+                            .scopes = {
+                              &(struct scope) {
+                                .type = "iden",
+                                .extra = "n"
+                              },
+                              &(struct scope) {
+                                .type = "number",
+                                .value = 1
+                              },
+                            },
+                          },
+                        },
+                      },
+                      &(struct scope) {
+                        .type = "iden",
+                        .extra = "n"
+                      }
+                    },
+                  },
+                  &(struct scope) {
+                    .type = "fcall",
+                    .extra = "fib",
+                    .argscount = 1,
+                    .args = {
+                      {
+                        .key = "n",
+                        .value = 1
+                      }
+                    }
+                  },
                 },
+                .return_value = 99
               },
-              &(struct scope) {
-                .type = "fcall",
-                .extra = "fib"
-              },
-            },
-            .return_value = 99
-          },
+            }
+          }
+        }
+          
         },
         .return_value = 99
       }
@@ -432,7 +448,10 @@ int main() {
   //fcall_case();
 
   // binary_op case 
-  binary_op_case();
+  //binary_op_case();
+
+  // recursive_case
+  recursive_case();
 
   return 0;
 }
