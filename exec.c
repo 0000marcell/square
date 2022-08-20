@@ -74,6 +74,11 @@ int find_bin_op(struct scope * node, arg * args, int argscount) {
   return result;
 }
 
+void check_if_iden_exists(struct scope * func, struct scope * node) {
+  int argscount = func->argscount;
+  //TODO
+}
+
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
   int result;
@@ -90,7 +95,13 @@ int traverse(struct scope * node, arg * args, int argscount) {
   // case fcall 
   if(strcmp(node->type, "fcall") == 0){
     struct scope * func = find_func(node->extra);
-    update_args(func, node);
+    // if it's -1 we want to use the value of the variable in the current scope so we skip the update
+    if(node->argscount != -1) {
+      update_args(func, node);
+    } else {
+      // checks if the variable that we want to use exists in the current scope
+      check_if_iden_exists(func, node);
+    }
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);
   }

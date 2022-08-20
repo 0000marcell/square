@@ -333,15 +333,18 @@ void recursive_case() {
   // function with recursive calls, fib > 2
   printf("running tests...\n");
   struct scope global = {
-    .type = "global",
-    .scopescount = 1,
+    .type = "function",
+    .extra = "global",
+    .scopescount = 2,
     .scopes = {
       &(struct scope) {
-        .type = "fib",
+        .type = "function",
+        .extra = "fib",
+        .argscount = 1,
         .args = {
           {
             .key = "n",
-            .value = 1 
+            .value = 99
           }
         },
         .scopescount = 1,
@@ -399,38 +402,44 @@ void recursive_case() {
                         },
                       },
                       &(struct scope) {
-                        .type = "iden",
-                        .extra = "n"
-                      }
+                        .type = "fcall",
+                        .extra = "fib",
+                        .argscount = -1, // that's the way we identify to use the variable
+                        .args = {
+                          {
+                            .key = "n",
+                          }
+                        }
+                      },   
                     },
                   },
-                  &(struct scope) {
-                    .type = "fcall",
-                    .extra = "fib",
-                    .argscount = 1,
-                    .args = {
-                      {
-                        .key = "n",
-                        .value = 1
-                      }
-                    }
-                  },
                 },
-                .return_value = 99
               },
+              &(struct scope) {
+                .type = "iden",
+                .extra = "n"
+              }
             }
           }
         }
-          
-        },
-        .return_value = 99
-      }
+      },
+      &(struct scope) {
+        .type = "fcall",
+        .extra = "fib",
+        .argscount = 1,
+        .args = {
+          {
+            .key = "n",
+            .value = 1
+          }
+        }
+      },
     },
     .return_value = 99
   };
   exec(&global);
-  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.scopes[0]->return_value == 1);
+  printf(">>>>> return_value %d\n", global.return_value);
+  assert(global.return_value == 2);
 }
 
 int main() {
