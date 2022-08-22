@@ -50,7 +50,6 @@ void update_args(struct scope * fscope, struct scope * nscope) {
     int j = 0;
     while(j < nscope->argscount) {
       if(strcmp(fscope->args[i].key, nscope->args[j].key) == 0) {
-        fscope->args[i].key = nscope->args[j].key;
         fscope->args[i].value = nscope->args[j].value;
       }
       j++;
@@ -74,8 +73,27 @@ int find_bin_op(struct scope * node, arg * args, int argscount) {
   return result;
 }
 
-void check_if_iden_exists(struct scope * func, struct scope * node) {
+void check_if_iden_exists(struct scope * fscope, struct scope * nscope, arg * args, int argscount) {
+  int i = 0;
+  while(i < nscope->argscount) {
+    nscope->args[i]->key;
+    int j = 0;
+    while(j < nscope->argscount) {
+      if(strcmp(fscope->args[i].key, nscope->args[j].key) == 0) {
+        int value = find_iden(nscope->args[j].key, args, argscount)->value;
+        fscope->args[i].key = nscope->args[j].key; */
+        /* fscope->args[i].value = nscope->args[j].value; */
+      }
+      j++;
+    }
+    i++;
+  }
   int argscount = func->argscount;
+  int i = 0;
+  while(i < argscount) {
+    func->args[i].key
+    i++;
+  }
   //TODO
 }
 
@@ -100,7 +118,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
       update_args(func, node);
     } else {
       // checks if the variable that we want to use exists in the current scope
-      check_if_iden_exists(func, node);
+      check_if_iden_exists(func, args, argscount);
     }
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);

@@ -407,7 +407,7 @@ void recursive_case() {
                         .argscount = -1, // that's the way we identify to use the variable
                         .args = {
                           {
-                            .key = "n",
+                            .key = "n", // this is a mapping, we want to grab the value of the variable n in the current scope and change the value of the variable n in the function scope
                           }
                         }
                       },   
