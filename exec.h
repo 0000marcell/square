@@ -6,11 +6,17 @@ typedef struct {
   int  value;
 } arg;
 
+typedef struct {
+  char * cur;
+  char * cal;
+} vmap;
+
 struct scope {
   char * type;
   char * extra;
   int argscount;
   arg args[100];
+  vmap vmap;
   int value;
   int scopescount;
   struct scope *scopes[100];

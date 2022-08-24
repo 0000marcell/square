@@ -404,12 +404,35 @@ void recursive_case() {
                       &(struct scope) {
                         .type = "fcall",
                         .extra = "fib",
-                        .argscount = -1, // that's the way we identify to use the variable
+                        .argscount = 1,
                         .args = {
                           {
-                            .key = "n", // this is a mapping, we want to grab the value of the variable n in the current scope and change the value of the variable n in the function scope
+                            .key = "n"
                           }
-                        }
+                        },
+                        .scopescount = 1,
+                        .scopes = {
+                          &(struct scope) {
+                            .type = "body",
+                            .scopescount = 1,
+                            .scopes = {
+                              &(struct scope) {
+                                .type = "assignment",
+                                .scopescount = 2,
+                                .scopes = {
+                                  &(struct scope) {
+                                    .type = "iden",
+                                    .extra = "n"
+                                  },
+                                  &(struct scope) {
+                                    .type = "iden",
+                                    .extra = "n"
+                                  },
+                                }
+                              },
+                            },
+                          },
+                        },
                       },   
                     },
                   },
@@ -450,6 +473,7 @@ int main() {
   
   // if statement executing the if statement
   //if_case();
+  
   // assignment case
   //assignment_case();
 
@@ -458,6 +482,7 @@ int main() {
 
   // binary_op case 
   //binary_op_case();
+  
 
   // recursive_case
   recursive_case();

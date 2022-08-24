@@ -73,28 +73,21 @@ int find_bin_op(struct scope * node, arg * args, int argscount) {
   return result;
 }
 
-void check_if_iden_exists(struct scope * fscope, struct scope * nscope, arg * args, int argscount) {
+void map_scope_var(struct scope * nscope, arg * args, int argscount) {
   int i = 0;
-  while(i < nscope->argscount) {
-    nscope->args[i]->key;
-    int j = 0;
-    while(j < nscope->argscount) {
-      if(strcmp(fscope->args[i].key, nscope->args[j].key) == 0) {
-        int value = find_iden(nscope->args[j].key, args, argscount)->value;
-        fscope->args[i].key = nscope->args[j].key; */
-        /* fscope->args[i].value = nscope->args[j].value; */
+  while(i < nscope->scopescount) {
+    int v1 = find_iden(nscope->scopes[i]->type, args, argscount)->value;
+    if(v1) {
+      int j = 0;
+      while(j < nscope->argscount) {
+        if(strcmp(nscope->scopes[i]->extra, nscope->args[j].key) == 0) {
+          nscope->args[j].value = v1;
+        }
+        j++;
       }
-      j++;
     }
     i++;
   }
-  int argscount = func->argscount;
-  int i = 0;
-  while(i < argscount) {
-    func->args[i].key
-    i++;
-  }
-  //TODO
 }
 
 int traverse(struct scope * node, arg * args, int argscount) {
@@ -114,12 +107,12 @@ int traverse(struct scope * node, arg * args, int argscount) {
   if(strcmp(node->type, "fcall") == 0){
     struct scope * func = find_func(node->extra);
     // if it's -1 we want to use the value of the variable in the current scope so we skip the update
-    if(node->argscount != -1) {
-      update_args(func, node);
-    } else {
-      // checks if the variable that we want to use exists in the current scope
-      check_if_iden_exists(func, args, argscount);
+    if(node->scopescount > 0) {
+      // calling traverse here will update fcall args then we can map the values with the calling function
+      traverse(node->scopes[0], node->args, node->argscount);
     }
+    // this function syncs the args values on fcall with the args of the calling function
+    update_args(func, node);
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);
   }

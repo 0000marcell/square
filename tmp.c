@@ -42,7 +42,12 @@ arg find_iden(char * str, arg * args, int argscount) {
 }
 
 int main() {
-  int a[10];
-  int result = a[8] * 37;
-  printf("result: %d\n", result);
+  arg a = {
+    .key = "n", 
+    .value = 2
+  };
+  if(a.value > 0) {
+    printf("bigger than zero\n");
+  }
+  //printf("result: %d\n", result);
 }
