@@ -4,6 +4,7 @@
 typedef struct {
   char *key;
   int  value;
+  int  skip_update;
 } arg;
 
 typedef struct {

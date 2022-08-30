@@ -44,13 +44,15 @@ struct scope * find_func(char * fname) {
   return result;
 }
 
-void update_args(struct scope * fscope, struct scope * nscope) {
+void update_args(arg * fargs, int fargscount, arg * nargs, int nargscount) {
   int i = 0;
-  while(i < fscope->argscount) {
+  while(i < fargscount) {
     int j = 0;
-    while(j < nscope->argscount) {
-      if(strcmp(fscope->args[i].key, nscope->args[j].key) == 0) {
-        fscope->args[i].value = nscope->args[j].value;
+    while(j < nargscount) {
+      if(strcmp(fargs[i].key, nargs[j].key) == 0) {
+        if(fargs[i].skip_update != 1) {
+          fargs[i].value = nargs[j].value;
+        }
       }
       j++;
     }
@@ -73,23 +75,6 @@ int find_bin_op(struct scope * node, arg * args, int argscount) {
   return result;
 }
 
-void map_scope_var(struct scope * nscope, arg * args, int argscount) {
-  int i = 0;
-  while(i < nscope->scopescount) {
-    int v1 = find_iden(nscope->scopes[i]->type, args, argscount)->value;
-    if(v1) {
-      int j = 0;
-      while(j < nscope->argscount) {
-        if(strcmp(nscope->scopes[i]->extra, nscope->args[j].key) == 0) {
-          nscope->args[j].value = v1;
-        }
-        j++;
-      }
-    }
-    i++;
-  }
-}
-
 int traverse(struct scope * node, arg * args, int argscount) {
   printf("node type: %s\n", node->type);
   int result;
@@ -102,43 +87,60 @@ int traverse(struct scope * node, arg * args, int argscount) {
       node->return_value = result;
       return result;
     }
+    if(strcmp(node->extra, "-") == 0) {
+      result = v1 - v2;
+      node->return_value = result;
+      return result;
+    }
   }
   // case fcall 
   if(strcmp(node->type, "fcall") == 0){
     struct scope * func = find_func(node->extra);
-    // if it's -1 we want to use the value of the variable in the current scope so we skip the update
-    if(node->scopescount > 0) {
-      // calling traverse here will update fcall args then we can map the values with the calling function
-      traverse(node->scopes[0], node->args, node->argscount);
+    // syncs the values of fcall with global, takes in to consideration skip_update 
+    update_args(node->args, node->argscount, args, argscount);
+    // if fcall has scope we execute the scope before attributing the value to the argument
+    if(node->scopescount == 1) {
+      result = traverse(node->scopes[0], node->args, node->argscount);
+      printf("body exec result: %d\n", result);
     }
     // this function syncs the args values on fcall with the args of the calling function
-    update_args(func, node);
+    update_args(func->args, func->argscount, node->args, node->argscount);
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);
+    return result;
   }
   // case if
   if(strcmp(node->type, "if") == 0) {
     struct scope * comp = node->scopes[0];
     struct scope * body = node->scopes[1];
+    int v1;
+    int v2;
+    if(strcmp(comp->scopes[0]->type, "iden") == 0) {
+      v1 = find_iden(comp->scopes[0]->extra,args, argscount)->value;
+    } else {
+      v1 = comp->scopes[0]->value;
+    }
+    if(strcmp(comp->scopes[1]->type, "iden") == 0) {
+      v2 = find_iden(comp->scopes[1]->extra,args, argscount)->value;
+    } else {
+      v2 = comp->scopes[1]->value;
+    }
+
     if(strcmp(comp->extra, "<") == 0) {
-      int v1;
-      int v2;
-      if(strcmp(comp->scopes[0]->type, "iden") == 0) {
-        v1 = find_iden(comp->scopes[0]->extra,args, argscount)->value;
-      } else {
-        v1 = comp->scopes[0]->value;
-      }
-      if(strcmp(comp->scopes[1]->type, "iden") == 0) {
-        v2 = find_iden(comp->scopes[1]->extra,args, argscount)->value;
-      } else {
-        v2 = comp->scopes[1]->value;
-      }
       if(v1 < v2) {
         // executes the body
         result = traverse(body, args, argscount);
       }
-      return result;
     }
+
+    if(strcmp(comp->extra, ">") == 0) {
+      if(v1 > v2) {
+        // executes the body
+        result = traverse(body, args, argscount);
+      }
+    }
+
+    return result;
   }
   // case assignment
   if(strcmp(node->type, "assignment") == 0) {
