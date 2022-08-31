@@ -3,96 +3,94 @@
 #include <assert.h>
 #include "../exec.h"
 
-void first_case() {
-  // function with one if statement returning 99
+void early_return() {
+  // function that returns ealy 
   printf("running tests...\n");
   struct scope global = {
-    .type = "global",
-    .scopescount = 1,
-    .scopes = {
-      &(struct scope) {
-        .type = "fib",
-        .args = {
-          {
-            .key = "n",
-            .value = 1 
-          }
-        },
-        .scopescount = 1,
-        .scopes = {
-          &(struct scope) {
-            .type = "if",
-            .value = 1,
-            .scopescount = 1,
-            .scopes = {
-              &(struct scope) {
-                .type = "number",
-                .value = 0
-              }
-            },
-            .return_value = 99
-          },
-        },
-        .return_value = 99
+    .type = "function",
+    .extra = "global",
+    .return_value = 0,
+    .argscount = 1,
+    .args = {
+      {
+        .key = "n",
+        .value = 1 
       }
     },
-    .return_value = 99
-  }; 
-  exec(&global);
-  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.scopes[0]->return_value == 0);
-}
-
-void second_case() {
-  // function with two if statement returning 99
-  printf("running tests...\n");
-  struct scope global = {
-    .type = "global",
-    .scopescount = 1,
+    .scopescount = 2,
     .scopes = {
       &(struct scope) {
-        .type = "fib",
+        .type = "function",
+        .extra = "fib",
+        .argscount = 1,
         .args = {
           {
             .key = "n",
-            .value = 1 
+            .value = 999 
           }
         },
         .scopescount = 2,
         .scopes = {
           &(struct scope) {
             .type = "if",
-            .value = 0,
-            .scopescount = 1,
+            .scopescount = 2,
             .scopes = {
               &(struct scope) {
-                .type = "number",
-                .value = 0
+                .type = "comp",
+                .extra = "==",
+                .scopescount = 2,
+                .scopes = {
+                  &(struct scope) {
+                    .type = "iden",
+                    .extra = "n"
+                  },
+                  &(struct scope) {
+                    .type = "number",
+                    .value = 2
+                  },
+                }
+              },
+              &(struct scope) {
+                .type = "body",
+                .scopescount = 1,
+                .scopes = {
+                  &(struct scope) {
+                    .type = "return",
+                    .scopescount = 1,
+                    .scopes = {
+                      &(struct scope) {
+                        .type = "number",
+                        .value = 1
+                      }
+                    }
+                  }
+                }
               }
-            },
-            .return_value = 99
+            }
           },
           &(struct scope) {
-            .type = "if",
-            .value = 1,
-            .scopescount = 1,
-            .scopes = {
-              &(struct scope) {
-                .type = "number",
-                .value = 1
-              }
-            },
-            .return_value = 99
-          },
-        },
-        .return_value = 99
+            .type = "number",
+            .value = 888
+          }
+        }
+      },
+      &(struct scope) {
+        .type = "fcall",
+        .extra = "fib",
+        .argscount = 1,
+        .args = {
+          {
+            .key = "n",
+            .skip_update = 1,
+            .value = 2 
+          }
+        }
       }
-    },
-    .return_value = 99
+    }
   };
   exec(&global);
-  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
-  assert(global.scopes[0]->return_value == 1);
+  printf(">>>>> return_value %d\n", global.scopes[1]->return_value);
+  assert(global.scopes[1]->return_value == 1);
 }
 
 void if_case() {
@@ -108,6 +106,7 @@ void if_case() {
         .key = "n",
         .value = 1 
       }
+
     },
     .scopes = {
       &(struct scope) {
@@ -587,30 +586,30 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  // function with one if statement returning 99
-  //first_case();
-  // function with two if statements second one returning 99 first returning 0
-  //second_case();
-  
   // if statement executing the if statement
-  if_case();
+  //if_case();
   
   // assignment case
-  assignment_case();
+  //assignment_case();
 
   // function call case
-  fcall_case();
+  //fcall_case();
 
   // binary_op case 
-  binary_op_case();
+  //binary_op_case();
   
 
   // recursive_case
-  recursive_case();
+  //recursive_case();
 
   // fcall_with_scopes
   // doing operation inside the arguments 
-  fcall_with_scopes();
+  //fcall_with_scopes();
+
+  early_return();
+
+  //fib
+  //fib();
 
   return 0;
 }

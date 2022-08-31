@@ -107,6 +107,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
     update_args(func->args, func->argscount, node->args, node->argscount);
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);
+    node->return_value = result;
     return result;
   }
   // case if
@@ -135,6 +136,13 @@ int traverse(struct scope * node, arg * args, int argscount) {
 
     if(strcmp(comp->extra, ">") == 0) {
       if(v1 > v2) {
+        // executes the body
+        result = traverse(body, args, argscount);
+      }
+    }
+
+    if(strcmp(comp->extra, "==") == 0) {
+      if(v1 == v2) {
         // executes the body
         result = traverse(body, args, argscount);
       }
@@ -178,6 +186,9 @@ int traverse(struct scope * node, arg * args, int argscount) {
       // we do not execute functions definition
       if(strcmp(node->scopes[i]->type, "function") != 0) {
         result = traverse(node->scopes[i], args, argscount);  
+      }
+      if(strcmp(node->scopes[i]->type, "return") == 0) {
+        break;
       }
       i++;
     }
