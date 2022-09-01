@@ -80,8 +80,19 @@ int traverse(struct scope * node, arg * args, int argscount) {
   int result;
   // case binary_op
   if(strcmp(node->type, "binary_op") == 0){
-    int v1 = find_bin_op(node->scopes[0], args, argscount);    
-    int v2 = find_bin_op(node->scopes[1], args, argscount);
+    int v1;
+    if(strcmp(node->scopes[0]->type, "fcall") == 0) {
+      v1 = traverse(node->scopes[0], args, argscount);
+    } else {
+      v1 = find_bin_op(node->scopes[0], args, argscount);    
+    }
+    int v2;
+    if(strcmp(node->scopes[1]->type, "fcall") == 0) {
+      v2 = traverse(node->scopes[1], args, argscount);
+    } else {
+      v2 = find_bin_op(node->scopes[1], args, argscount);
+    }
+
     if(strcmp(node->extra, "+") == 0) {
       result = v1 + v2;
       node->return_value = result;
