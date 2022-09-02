@@ -780,10 +780,9 @@ int main() {
   // doing operation inside the arguments 
   //fcall_with_scopes();
 
-  //early_return();
+  early_return();
 
   //fibonacci case
-  fib();
-
+  //fib();
   return 0;
 }
