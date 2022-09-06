@@ -3,6 +3,8 @@
 #include "exec.h"
 #include <stdlib.h>
 
+struct scope * GLOBAL_SCOPE;
+int EARLY_RETURN = 0;
 
 arg * find_iden(char * str, arg * args, int argscount) {
   int i = 0;
@@ -22,7 +24,6 @@ arg * find_iden(char * str, arg * args, int argscount) {
   return result;
 }
 
-struct scope * GLOBAL_SCOPE;
 
 struct scope * find_func(char * fname) {
   int i = 0;
@@ -83,12 +84,14 @@ int traverse(struct scope * node, arg * args, int argscount) {
     int v1;
     if(strcmp(node->scopes[0]->type, "fcall") == 0) {
       v1 = traverse(node->scopes[0], args, argscount);
+      EARLY_RETURN = 0;
     } else {
       v1 = find_bin_op(node->scopes[0], args, argscount);    
     }
     int v2;
     if(strcmp(node->scopes[1]->type, "fcall") == 0) {
       v2 = traverse(node->scopes[1], args, argscount);
+      EARLY_RETURN = 0;
     } else {
       v2 = find_bin_op(node->scopes[1], args, argscount);
     }
@@ -118,6 +121,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
     update_args(func->args, func->argscount, node->args, node->argscount);
     // func->scopes[0] is always the body of the function
     result = traverse(func->scopes[0], func->args, func->argscount);
+    EARLY_RETURN = 0;
     node->return_value = result;
     return result;
   }
@@ -172,6 +176,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
 
       if(strcmp(node->scopes[1]->type, "fcall") == 0) {
         result = traverse(node->scopes[1], args, argscount);
+        EARLY_RETURN = 0;
         iden->value = result;
       }
 
@@ -198,7 +203,9 @@ int traverse(struct scope * node, arg * args, int argscount) {
       if(strcmp(node->scopes[i]->type, "function") != 0) {
         result = traverse(node->scopes[i], args, argscount);  
       }
-      if(strcmp(node->scopes[i]->type, "return") == 0) {
+      if(strcmp(node->scopes[i]->type, "return") == 0 || 
+         EARLY_RETURN == 1) {
+        EARLY_RETURN = 1;
         break;
       }
       i++;
@@ -209,6 +216,6 @@ int traverse(struct scope * node, arg * args, int argscount) {
 }
 
 void exec(struct scope * global) {
-  GLOBAL_SCOPE = global;
+  GLOBAL_SCOPE = global->scopes[0];
   traverse(global, global->args, global->argscount);
 }
