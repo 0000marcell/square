@@ -38,6 +38,10 @@ equal       ([=])
   yylval.string = strdup(yytext); 
   return (GT); 
 }
+< { 
+  yylval.string = strdup(yytext); 
+  return (LT); 
+}
 {idfunc} { 
   yylval.string = strdup(yytext); 
   return (IDFUNC); 
