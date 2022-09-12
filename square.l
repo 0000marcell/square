@@ -16,6 +16,7 @@ idfunc      (\:[a-z]+)
 identifier  ([a-z]+)
 nline       (\n)
 equal       ([=])
+lessthan    ([<])
 
 
 %%
@@ -38,7 +39,7 @@ equal       ([=])
   yylval.string = strdup(yytext); 
   return (GT); 
 }
-< { 
+{lessthan} { 
   yylval.string = strdup(yytext); 
   return (LT); 
 }

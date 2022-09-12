@@ -3,14 +3,10 @@ Terminals unused in grammar
     OP
     SEMICOLUMN
     PRINT
-    OPBRA
     CLBRA
-    IDFUNC
     GT
     OTHER
     COM
-    COL
-    NLINE
 
 
 Grammar
@@ -23,40 +19,43 @@ Grammar
     3      | stmt stmts
 
     4 stmt: ID EQ NUM
+    5     | OPBRA IDFUNC ID LT NUM COL
+    6     | NLINE
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    NUM <number> (258) 4
+    NUM <number> (258) 4 5
     OP <string> (259)
     SEMICOLUMN (260)
     PRINT (261)
-    OPBRA <string> (262)
+    OPBRA <string> (262) 5
     CLBRA <string> (263)
-    IDFUNC <string> (264)
+    IDFUNC <string> (264) 5
     GT <string> (265)
-    OTHER (266)
-    ID <string> (267) 4
-    COM (268)
-    COL (269)
-    NLINE (270)
-    EQ (271) 4
+    LT <string> (266) 5
+    OTHER (267)
+    ID <string> (268) 4 5
+    COM (269)
+    COL (270) 5
+    NLINE (271) 6
+    EQ (272) 4
 
 
 Nonterminals, with rules where they appear
 
-    $accept (17)
+    $accept (18)
         on left: 0
-    prog (18)
+    prog (19)
         on left: 1
         on right: 0
-    stmts (19)
+    stmts (20)
         on left: 2 3
         on right: 1 3
-    stmt <number> (20)
-        on left: 4
+    stmt <number> (21)
+        on left: 4 5 6
         on right: 3
 
 
@@ -64,71 +63,124 @@ State 0
 
     0 $accept: • prog $end
 
-    ID  shift, and go to state 1
+    OPBRA  shift, and go to state 1
+    ID     shift, and go to state 2
+    NLINE  shift, and go to state 3
 
     $default  reduce using rule 2 (stmts)
 
-    prog   go to state 2
-    stmts  go to state 3
-    stmt   go to state 4
+    prog   go to state 4
+    stmts  go to state 5
+    stmt   go to state 6
 
 
 State 1
 
-    4 stmt: ID • EQ NUM
+    5 stmt: OPBRA • IDFUNC ID LT NUM COL
 
-    EQ  shift, and go to state 5
+    IDFUNC  shift, and go to state 7
 
 
 State 2
 
-    0 $accept: prog • $end
+    4 stmt: ID • EQ NUM
 
-    $end  shift, and go to state 6
+    EQ  shift, and go to state 8
 
 
 State 3
+
+    6 stmt: NLINE •
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 4
+
+    0 $accept: prog • $end
+
+    $end  shift, and go to state 9
+
+
+State 5
 
     1 prog: stmts •
 
     $default  reduce using rule 1 (prog)
 
 
-State 4
+State 6
 
     3 stmts: stmt • stmts
 
-    ID  shift, and go to state 1
+    OPBRA  shift, and go to state 1
+    ID     shift, and go to state 2
+    NLINE  shift, and go to state 3
 
     $default  reduce using rule 2 (stmts)
 
-    stmts  go to state 7
-    stmt   go to state 4
+    stmts  go to state 10
+    stmt   go to state 6
 
 
-State 5
+State 7
+
+    5 stmt: OPBRA IDFUNC • ID LT NUM COL
+
+    ID  shift, and go to state 11
+
+
+State 8
 
     4 stmt: ID EQ • NUM
 
-    NUM  shift, and go to state 8
+    NUM  shift, and go to state 12
 
 
-State 6
+State 9
 
     0 $accept: prog $end •
 
     $default  accept
 
 
-State 7
+State 10
 
     3 stmts: stmt stmts •
 
     $default  reduce using rule 3 (stmts)
 
 
-State 8
+State 11
+
+    5 stmt: OPBRA IDFUNC ID • LT NUM COL
+
+    LT  shift, and go to state 13
+
+
+State 12
 
     4 stmt: ID EQ NUM •
 
     $default  reduce using rule 4 (stmt)
+
+
+State 13
+
+    5 stmt: OPBRA IDFUNC ID LT • NUM COL
+
+    NUM  shift, and go to state 14
+
+
+State 14
+
+    5 stmt: OPBRA IDFUNC ID LT NUM • COL
+
+    COL  shift, and go to state 15
+
+
+State 15
+
+    5 stmt: OPBRA IDFUNC ID LT NUM COL •
+
+    $default  reduce using rule 5 (stmt)

@@ -23,15 +23,19 @@ struct scope global = {
   }
 };
 
+struct scope * OPEN_BODY;
+int IS_BODY_OPEN = 0;
+
 %}
 
-%token NUM OP SEMICOLUMN PRINT OPBRA CLBRA IDFUNC GT OTHER ID COM COL NLINE EQ
+%token NUM OP SEMICOLUMN PRINT OPBRA CLBRA IDFUNC GT LT OTHER ID COM COL NLINE EQ
 
 %type <number> NUM
 %type <string> IDFUNC 
 %type <string> OPBRA 
 %type <string> CLBRA 
 %type <string> GT 
+%type <string> LT 
 %type <string> ID 
 %type <string> OP 
 %type	<number> stmt
@@ -50,31 +54,45 @@ stmts:
      | stmt stmts 
 
 stmt: ID EQ NUM {
-      global.args[0].key = $1;  
-      global.args[0].value = $3;  
+      if(IS_BODY_OPEN) {
+        BODY
+      } else {
+      }
+      farg = find_iden($1, global.args[0], global.argscount);
+      farg.value = $3;
+      /* global.args[0].key = $1; */  
+      /* global.args[0].value = $3; */  
       printf("after!");
     } 
     | OPBRA IDFUNC ID LT NUM COL {
       global.scopescount++;
-      struct scope sc;
       if(strcmp($2, "if") == 0) {
-        sc = {
+        struct scope sc = {
           .type = "if",
           .scopescount = 2,
           .scopes = {
-            .type = "comp",
-            .extra = "<",
-            .scopescount = 2,
-            .scopes = {
-              &(struct scope) {
-                .type
+            &(struct scope) {
+              .type = "comp",
+              .extra = "<",
+              .scopescount = 2,
+              .scopes = {
+                &(struct scope) {
+                  .type = "iden",
+                  .extra = $3
+                },
+                &(struct scope) {
+                  .type = "number",
+                  .value = $5
+                },
               }
             }
           }
         };
+        OPEN_BODY = sc.scopes[1];
+        IS_BODY_OPEN = 1;
+        global.scopes[0] = &sc;
       }
-      global.scopes[0] = sc;
-    } 
+    }
     | NLINE {
       //do nothing!!!
     }

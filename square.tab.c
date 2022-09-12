@@ -93,8 +93,10 @@ struct scope global = {
   }
 };
 
+struct scope * OPEN_BODY;
 
-#line 98 "square.tab.c"
+
+#line 100 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -133,16 +135,17 @@ enum yysymbol_kind_t
   YYSYMBOL_CLBRA = 8,                      /* CLBRA  */
   YYSYMBOL_IDFUNC = 9,                     /* IDFUNC  */
   YYSYMBOL_GT = 10,                        /* GT  */
-  YYSYMBOL_OTHER = 11,                     /* OTHER  */
-  YYSYMBOL_ID = 12,                        /* ID  */
-  YYSYMBOL_COM = 13,                       /* COM  */
-  YYSYMBOL_COL = 14,                       /* COL  */
-  YYSYMBOL_NLINE = 15,                     /* NLINE  */
-  YYSYMBOL_EQ = 16,                        /* EQ  */
-  YYSYMBOL_YYACCEPT = 17,                  /* $accept  */
-  YYSYMBOL_prog = 18,                      /* prog  */
-  YYSYMBOL_stmts = 19,                     /* stmts  */
-  YYSYMBOL_stmt = 20                       /* stmt  */
+  YYSYMBOL_LT = 11,                        /* LT  */
+  YYSYMBOL_OTHER = 12,                     /* OTHER  */
+  YYSYMBOL_ID = 13,                        /* ID  */
+  YYSYMBOL_COM = 14,                       /* COM  */
+  YYSYMBOL_COL = 15,                       /* COL  */
+  YYSYMBOL_NLINE = 16,                     /* NLINE  */
+  YYSYMBOL_EQ = 17,                        /* EQ  */
+  YYSYMBOL_YYACCEPT = 18,                  /* $accept  */
+  YYSYMBOL_prog = 19,                      /* prog  */
+  YYSYMBOL_stmts = 20,                     /* stmts  */
+  YYSYMBOL_stmt = 21                       /* stmt  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -468,21 +471,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  6
+#define YYFINAL  9
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   5
+#define YYLAST   12
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  17
+#define YYNTOKENS  18
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  5
+#define YYNRULES  7
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  9
+#define YYNSTATES  16
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   271
+#define YYMAXUTOK   272
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -523,14 +526,14 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16
+      15,    16,    17
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    46,    46,    49,    50,    52
+       0,    49,    49,    52,    53,    55,    60,    88
 };
 #endif
 
@@ -547,8 +550,8 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUM", "OP",
-  "SEMICOLUMN", "PRINT", "OPBRA", "CLBRA", "IDFUNC", "GT", "OTHER", "ID",
-  "COM", "COL", "NLINE", "EQ", "$accept", "prog", "stmts", "stmt", YY_NULLPTR
+  "SEMICOLUMN", "PRINT", "OPBRA", "CLBRA", "IDFUNC", "GT", "LT", "OTHER",
+  "ID", "COM", "COL", "NLINE", "EQ", "$accept", "prog", "stmts", "stmt", YY_NULLPTR
 };
 
 static const char *
@@ -572,7 +575,8 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -12,   -15,     2,   -16,   -12,     0,   -16,   -16,   -16
+      -7,    -8,   -15,   -16,     3,   -16,    -7,    -9,     2,   -16,
+     -16,    -4,   -16,     5,    -5,   -16
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -580,19 +584,20 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     0,     2,     3,     0,     1,     4,     5
+       3,     0,     0,     7,     0,     2,     3,     0,     0,     1,
+       4,     0,     5,     0,     0,     6
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -16,   -16,     1,   -16
+     -16,   -16,     6,   -16
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2,     3,     4
+       0,     4,     5,     6
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -600,31 +605,34 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     5,     6,     8,     0,     7
+       1,     7,     8,     9,    11,    12,     2,    13,    14,     3,
+      15,     0,    10
 };
 
 static const yytype_int8 yycheck[] =
 {
-      12,    16,     0,     3,    -1,     4
+       7,     9,    17,     0,    13,     3,    13,    11,     3,    16,
+      15,    -1,     6
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    12,    18,    19,    20,    16,     0,    19,     3
+       0,     7,    13,    16,    19,    20,    21,     9,    17,     0,
+      20,    13,     3,    11,     3,    15
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    17,    18,    19,    19,    20
+       0,    18,    19,    20,    20,    21,    21,    21
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3
+       0,     2,     1,     0,     2,     3,     6,     1
 };
 
 
@@ -1088,17 +1096,58 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: ID EQ NUM  */
-#line 52 "square.y"
+#line 55 "square.y"
                 {
       global.args[0].key = (yyvsp[-2].string);  
-      global.args[1].value = (yyvsp[0].number);  
+      global.args[0].value = (yyvsp[0].number);  
       printf("after!");
     }
-#line 1098 "square.tab.c"
+#line 1106 "square.tab.c"
+    break;
+
+  case 6: /* stmt: OPBRA IDFUNC ID LT NUM COL  */
+#line 60 "square.y"
+                                 {
+      global.scopescount++;
+      if(strcmp((yyvsp[-4].string), "if") == 0) {
+        struct scope sc = {
+          .type = "if",
+          .scopescount = 2,
+          .scopes = {
+            &(struct scope) {
+              .type = "comp",
+              .extra = "<",
+              .scopescount = 2,
+              .scopes = {
+                &(struct scope) {
+                  .type = "iden",
+                  .extra = (yyvsp[-3].string)
+                },
+                &(struct scope) {
+                  .type = "number",
+                  .value = (yyvsp[-1].number)
+                },
+              }
+            }
+          }
+        };
+        OPEN_BODY = sc.scopes[1];
+        global.scopes[0] = &sc;
+      }
+    }
+#line 1139 "square.tab.c"
+    break;
+
+  case 7: /* stmt: NLINE  */
+#line 88 "square.y"
+            {
+      //do nothing!!!
+    }
+#line 1147 "square.tab.c"
     break;
 
 
-#line 1102 "square.tab.c"
+#line 1151 "square.tab.c"
 
       default: break;
     }
@@ -1291,7 +1340,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 60 "square.y"
+#line 94 "square.y"
 
 
 int yyerror(char *s)
