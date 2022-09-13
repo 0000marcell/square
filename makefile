@@ -2,4 +2,5 @@ default:
 	clear
 	flex -l square.l
 	bison -dv square.y 
-	gcc -g -o square square.tab.c lex.yy.c -lfl
+	gcc -g -Wall -Wextra -c exec.c -o ./lib/exec.o
+	gcc -g ./lib/exec.o -o square square.tab.c lex.yy.c -lfl

@@ -23,8 +23,11 @@ struct scope global = {
   }
 };
 
-struct scope * OPEN_BODY;
-int IS_BODY_OPEN = 0;
+struct scope * cscope = &global;
+struct scope * prevscope = &global;
+struct scope * cargs = &global;
+struct scope * prevargs = &global;
+
 
 %}
 
@@ -54,18 +57,16 @@ stmts:
      | stmt stmts 
 
 stmt: ID EQ NUM {
-      if(IS_BODY_OPEN) {
-        BODY
-      } else {
-      }
-      farg = find_iden($1, global.args[0], global.argscount);
-      farg.value = $3;
-      /* global.args[0].key = $1; */  
-      /* global.args[0].value = $3; */  
-      printf("after!");
+      struct scope sc = {
+        .type = "iden",
+        .extra = $1
+      };
+      cscope->scopescount++;
+      cscope->scopes[cscope->scopescount] = &sc; 
+      arg * farg = find_iden($1, cargs->args, cargs->argscount);
+      farg->value = $3;
     } 
     | OPBRA IDFUNC ID LT NUM COL {
-      global.scopescount++;
       if(strcmp($2, "if") == 0) {
         struct scope sc = {
           .type = "if",
@@ -88,10 +89,14 @@ stmt: ID EQ NUM {
             }
           }
         };
-        OPEN_BODY = sc.scopes[1];
-        IS_BODY_OPEN = 1;
-        global.scopes[0] = &sc;
+        cscope->scopescount++;
+        cscope->scopes[cscope->scopescount] = &sc;
+        prevscope = cscope;
+        cscope = &sc;
       }
+    }
+    | CLBRA NLINE {
+      cscope = prevscope;
     }
     | NLINE {
       //do nothing!!!
