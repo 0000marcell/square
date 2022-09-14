@@ -10,11 +10,29 @@ extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
 
+struct scope * find_body(struct scope * sc) {
+  int i = 0;
+  int didfind = 0;
+  struct scope * result;
+  while(i < sc->scopescount) {
+    if(strcmp(sc->scopes[i]->type, "body") == 0) {
+      result = sc->scopes[i];
+      didfind = 1;
+    }
+    i++;
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not body on scope %s\n", sc->type);
+    exit(1);
+  }
+  return result;
+}
+
 struct scope global = {
   .type = "function",
   .extra = "global",
   .return_value = 0,
-  .argscount = 1,
+  .argscount = 0,
   .scopescount = 1,
   .scopes = {
     &(struct scope) {
@@ -61,13 +79,24 @@ stmt: ID EQ NUM {
         .type = "iden",
         .extra = $1
       };
-      cscope->scopescount++;
-      cscope->scopes[cscope->scopescount] = &sc; 
-      arg * farg = find_iden($1, cargs->args, cargs->argscount);
-      farg->value = $3;
-    } 
+      struct scope * body = find_body(cscope);
+      body->scopes[body->scopescount] = &sc; 
+      body->scopescount++;
+      arg * farg;
+      if(cargs->argscount > 0) {
+        farg = find_iden($1, cargs->args, cargs->argscount);
+        if(strcmp(farg->key, $1) == 0) {
+          farg->value = $3;
+        }
+      }
+      if(!farg) {
+        cargs->args[cargs->argscount].key = $1;
+        cargs->args[cargs->argscount].value = $3;
+        cargs->argscount++;
+      }
+    }
     | OPBRA IDFUNC ID LT NUM COL {
-      if(strcmp($2, "if") == 0) {
+      if(strcmp($2, ":if") == 0) {
         struct scope sc = {
           .type = "if",
           .scopescount = 2,

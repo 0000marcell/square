@@ -80,11 +80,29 @@ extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
 
+struct scope * find_body(struct scope * sc) {
+  int i = 0;
+  int didfind = 0;
+  struct scope * result;
+  while(i < sc->scopescount) {
+    if(strcmp(sc->scopes[i]->type, "body") == 0) {
+      result = sc->scopes[i];
+      didfind = 1;
+    }
+    i++;
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not body on scope %s\n", sc->type);
+    exit(1);
+  }
+  return result;
+}
+
 struct scope global = {
   .type = "function",
   .extra = "global",
   .return_value = 0,
-  .argscount = 1,
+  .argscount = 0,
   .scopescount = 1,
   .scopes = {
     &(struct scope) {
@@ -100,7 +118,7 @@ struct scope * prevargs = &global;
 
 
 
-#line 104 "square.tab.c"
+#line 122 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -535,9 +553,9 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    53,    53,    56,    57,    59,    69,    98,   101
+       0,    71,    71,    74,    75,    77,    98,   127,   130
 };
 #endif
 
@@ -1100,24 +1118,35 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: ID EQ NUM  */
-#line 59 "square.y"
+#line 77 "square.y"
                 {
       struct scope sc = {
         .type = "iden",
         .extra = (yyvsp[-2].string)
       };
-      cscope->scopescount++;
-      cscope->scopes[cscope->scopescount] = &sc; 
-      arg * farg = find_iden((yyvsp[-2].string), cargs->args, cargs->argscount);
-      farg->value = (yyvsp[0].number);
+      struct scope * body = find_body(cscope);
+      body->scopes[body->scopescount] = &sc; 
+      body->scopescount++;
+      arg * farg;
+      if(cargs->argscount > 0) {
+        farg = find_iden((yyvsp[-2].string), cargs->args, cargs->argscount);
+        if(strcmp(farg->key, (yyvsp[-2].string)) == 0) {
+          farg->value = (yyvsp[0].number);
+        }
+      }
+      if(!farg) {
+        cargs->args[cargs->argscount].key = (yyvsp[-2].string);
+        cargs->args[cargs->argscount].value = (yyvsp[0].number);
+        cargs->argscount++;
+      }
     }
-#line 1115 "square.tab.c"
+#line 1144 "square.tab.c"
     break;
 
   case 6: /* stmt: OPBRA IDFUNC ID LT NUM COL  */
-#line 69 "square.y"
+#line 98 "square.y"
                                  {
-      if(strcmp((yyvsp[-4].string), "if") == 0) {
+      if(strcmp((yyvsp[-4].string), ":if") == 0) {
         struct scope sc = {
           .type = "if",
           .scopescount = 2,
@@ -1145,27 +1174,27 @@ yyreduce:
         cscope = &sc;
       }
     }
-#line 1149 "square.tab.c"
+#line 1178 "square.tab.c"
     break;
 
   case 7: /* stmt: CLBRA NLINE  */
-#line 98 "square.y"
+#line 127 "square.y"
                   {
       cscope = prevscope;
     }
-#line 1157 "square.tab.c"
+#line 1186 "square.tab.c"
     break;
 
   case 8: /* stmt: NLINE  */
-#line 101 "square.y"
+#line 130 "square.y"
             {
       //do nothing!!!
     }
-#line 1165 "square.tab.c"
+#line 1194 "square.tab.c"
     break;
 
 
-#line 1169 "square.tab.c"
+#line 1198 "square.tab.c"
 
       default: break;
     }
@@ -1358,7 +1387,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 107 "square.y"
+#line 136 "square.y"
 
 
 int yyerror(char *s)
