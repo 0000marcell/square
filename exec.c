@@ -6,7 +6,7 @@
 struct scope * GLOBAL_SCOPE;
 int EARLY_RETURN = 0;
 
-arg * find_iden(char * str, arg * args, int argscount) {
+arg * find_iden(char * str, arg * args, int argscount, int abort) {
   int i = 0;
   arg * result;
   int didfind = 0;
@@ -17,7 +17,7 @@ arg * find_iden(char * str, arg * args, int argscount) {
       break;
     }
   }
-  if(didfind == 0) {
+  if(didfind == 0 && abort == 1) {
     printf("ERROR: could not find arg: %s\n", str);
     exit(1);
   }
@@ -64,7 +64,7 @@ void update_args(arg * fargs, int fargscount, arg * nargs, int nargscount) {
 int find_bin_op(struct scope * node, arg * args, int argscount) {
   int result;
   if(strcmp(node->type, "iden") == 0) {
-    result = find_iden(node->extra, args, argscount)->value;
+    result = find_iden(node->extra, args, argscount, 1)->value;
   } else {
     if(strcmp(node->type, "number") == 0) {
       result = node->value;
@@ -132,12 +132,12 @@ int traverse(struct scope * node, arg * args, int argscount) {
     int v1;
     int v2;
     if(strcmp(comp->scopes[0]->type, "iden") == 0) {
-      v1 = find_iden(comp->scopes[0]->extra,args, argscount)->value;
+      v1 = find_iden(comp->scopes[0]->extra,args, argscount, 1)->value;
     } else {
       v1 = comp->scopes[0]->value;
     }
     if(strcmp(comp->scopes[1]->type, "iden") == 0) {
-      v2 = find_iden(comp->scopes[1]->extra,args, argscount)->value;
+      v2 = find_iden(comp->scopes[1]->extra,args, argscount, 1)->value;
     } else {
       v2 = comp->scopes[1]->value;
     }
@@ -168,7 +168,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
   // case assignment
   if(strcmp(node->type, "assignment") == 0) {
     if(strcmp(node->scopes[0]->type, "iden") == 0) {
-      arg * iden = find_iden(node->scopes[0]->extra, args, argscount); 
+      arg * iden = find_iden(node->scopes[0]->extra, args, argscount, 1); 
 
       if(strcmp(node->scopes[1]->type, "number") == 0) {
         iden->value =  node->scopes[1]->value;
@@ -191,7 +191,7 @@ int traverse(struct scope * node, arg * args, int argscount) {
     }
   }
   if(strcmp(node->type, "iden") == 0) {
-    return find_iden(node->extra, args, argscount)->value;
+    return find_iden(node->extra, args, argscount, 1)->value;
   }
   if(strcmp(node->type, "number") == 0) {
     return node->value;

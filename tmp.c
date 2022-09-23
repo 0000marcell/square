@@ -9,8 +9,11 @@ typedef struct {
 
 struct scope {
   char * type;
+  char * extra;
+  int argscount;
   arg args[100];
   int value;
+  int scopescount;
   struct scope * scopes[100];
   int return_value;
 };
@@ -41,11 +44,42 @@ arg find_iden(char * str, arg * args, int argscount) {
   return result;
 }
 
+void func(int n, int abort) {
+  printf("func!\n");
+}
+
+struct scope global = {
+  .type = "function",
+  .extra = "global",
+  .return_value = 0,
+  .scopescount = 3,
+  .scopes = {
+    &(struct scope) {
+      .type = "body"
+    }
+  }
+};
+
+
 int main() {
-  int i;
-  arg a = {
-    .key = "n", 
-  };
-  printf("value: %d\n", a.value);
-  printf("value: %d\n", i);
+
+  struct scope * body = global.scopes[0];
+
+  int i = 0;
+  while(i < 2) {
+    struct scope *sc1 = (struct scope *) malloc(sizeof(struct scope));
+    (sc1)->type = "if";
+    body->scopes[i] = sc1; 
+    struct scope *sc2 = (struct scope *) malloc(sizeof(struct scope));
+    (sc2)->argscount = i;
+    body->scopes[i]->scopes[0] = sc2; 
+    printf("before argscount: %d\n", body->scopes[i]->scopes[0]->argscount);
+    printf("address: %p\n", &body->scopes[i]);
+    i++;
+  }
+  printf("after argscount: %d\n", body->scopes[0]->scopes[0]->argscount);
+  printf("after argscount: %d\n", body->scopes[1]->scopes[0]->argscount);
+  printf("address : %p\n", &body->scopes[0]);
+  printf("address : %p\n", &body->scopes[1]);
+  return 0;
 }

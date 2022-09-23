@@ -106,7 +106,8 @@ struct scope global = {
   .scopescount = 1,
   .scopes = {
     &(struct scope) {
-      .type = "body"
+      .type = "body",
+      .scopescount = 0
     }
   }
 };
@@ -118,7 +119,7 @@ struct scope * prevargs = &global;
 
 
 
-#line 122 "square.tab.c"
+#line 123 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -555,7 +556,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    71,    71,    74,    75,    77,    98,   127,   130
+       0,    72,    72,    75,    76,    78,   107,   142,   146
 };
 #endif
 
@@ -1118,83 +1119,98 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: ID EQ NUM  */
-#line 77 "square.y"
+#line 78 "square.y"
                 {
-      struct scope sc = {
+      printf("assignment!!!\n");
+      struct scope first_structure = {
+        .type = "assignment",
+        .scopescount = 2,
+      };
+      struct scope iden = {
         .type = "iden",
         .extra = (yyvsp[-2].string)
       };
+      struct scope number = {
+        .type = "number",
+        .value = (yyvsp[0].number)
+      };
+      first_structure.scopes[0] = &iden;
+      first_structure.scopes[1] = &number;
+      //he cannot find the body because declaring the above structure changed if
       struct scope * body = find_body(cscope);
-      body->scopes[body->scopescount] = &sc; 
+      body->scopes[body->scopescount] = &first_structure;
       body->scopescount++;
-      arg * farg;
-      if(cargs->argscount > 0) {
-        farg = find_iden((yyvsp[-2].string), cargs->args, cargs->argscount);
-        if(strcmp(farg->key, (yyvsp[-2].string)) == 0) {
-          farg->value = (yyvsp[0].number);
-        }
-      }
-      if(!farg) {
-        cargs->args[cargs->argscount].key = (yyvsp[-2].string);
-        cargs->args[cargs->argscount].value = (yyvsp[0].number);
-        cargs->argscount++;
-      }
+      /* arg * farg; */
+      /* if(cargs->argscount > 0) { */
+      /*   farg = find_iden($1, cargs->args, cargs->argscount, 0); */
+      /* } */
+      /* if(!farg) { */
+      /*   cargs->args[cargs->argscount].key = $1; */
+      /*   cargs->argscount++; */
+      /* } */
     }
-#line 1144 "square.tab.c"
+#line 1153 "square.tab.c"
     break;
 
   case 6: /* stmt: OPBRA IDFUNC ID LT NUM COL  */
-#line 98 "square.y"
+#line 107 "square.y"
                                  {
+      printf("if!!!\n");
       if(strcmp((yyvsp[-4].string), ":if") == 0) {
-        struct scope sc = {
+        struct scope * body = find_body(cscope);
+        struct scope second_structure = {
           .type = "if",
           .scopescount = 2,
-          .scopes = {
-            &(struct scope) {
-              .type = "comp",
-              .extra = "<",
-              .scopescount = 2,
-              .scopes = {
-                &(struct scope) {
-                  .type = "iden",
-                  .extra = (yyvsp[-3].string)
-                },
-                &(struct scope) {
-                  .type = "number",
-                  .value = (yyvsp[-1].number)
-                },
-              }
-            }
-          }
         };
-        cscope->scopescount++;
-        cscope->scopes[cscope->scopescount] = &sc;
+        struct scope comp = {
+          .type = "comp",
+          .extra = "<",
+          .scopescount = 2,
+        };
+        struct scope c1 = {
+          .type = "iden",
+          .extra = (yyvsp[-3].string)
+        };
+        struct scope c2 = {
+          .type = "number",
+          .value = (yyvsp[-1].number)
+        };
+        comp.scopes[0] = &c1;
+        comp.scopes[1] = &c2;
+        struct scope ifbody = {
+          .type = "body",
+          .scopescount = 0
+        };
+        second_structure.scopes[0] = &comp;
+        second_structure.scopes[1] = &ifbody;
+        body->scopes[body->scopescount] = &second_structure;
+        body->scopescount++;
         prevscope = cscope;
-        cscope = &sc;
+        cscope = &second_structure; 
       }
     }
-#line 1178 "square.tab.c"
+#line 1193 "square.tab.c"
     break;
 
   case 7: /* stmt: CLBRA NLINE  */
-#line 127 "square.y"
+#line 142 "square.y"
                   {
       cscope = prevscope;
+      printf("the end!!!");
     }
-#line 1186 "square.tab.c"
+#line 1202 "square.tab.c"
     break;
 
   case 8: /* stmt: NLINE  */
-#line 130 "square.y"
+#line 146 "square.y"
             {
       //do nothing!!!
     }
-#line 1194 "square.tab.c"
+#line 1210 "square.tab.c"
     break;
 
 
-#line 1198 "square.tab.c"
+#line 1214 "square.tab.c"
 
       default: break;
     }
@@ -1387,7 +1403,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 136 "square.y"
+#line 152 "square.y"
 
 
 int yyerror(char *s)

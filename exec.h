@@ -24,7 +24,7 @@ struct scope {
   int return_value;
 };
 
-arg * find_iden(char * str, arg * args, int argscount);
+arg * find_iden(char * str, arg * args, int argscount, int abort);
 
 void exec(struct scope * global);
 

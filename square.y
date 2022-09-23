@@ -36,7 +36,8 @@ struct scope global = {
   .scopescount = 1,
   .scopes = {
     &(struct scope) {
-      .type = "body"
+      .type = "body",
+      .scopescount = 0
     }
   }
 };
@@ -75,57 +76,74 @@ stmts:
      | stmt stmts 
 
 stmt: ID EQ NUM {
-      struct scope sc = {
+      printf("assignment!!!\n");
+      struct scope first_structure = {
+        .type = "assignment",
+        .scopescount = 2,
+      };
+      struct scope iden = {
         .type = "iden",
         .extra = $1
       };
+      struct scope number = {
+        .type = "number",
+        .value = $3
+      };
+      first_structure.scopes[0] = &iden;
+      first_structure.scopes[1] = &number;
+      //he cannot find the body because declaring the above structure changed if
+      // using different scopes for everything didn't fix the problem, I don't know why 
+      // hes using the same address when creating new structure
       struct scope * body = find_body(cscope);
-      body->scopes[body->scopescount] = &sc; 
+      body->scopes[body->scopescount] = &first_structure;
       body->scopescount++;
-      arg * farg;
-      if(cargs->argscount > 0) {
-        farg = find_iden($1, cargs->args, cargs->argscount);
-        if(strcmp(farg->key, $1) == 0) {
-          farg->value = $3;
-        }
-      }
-      if(!farg) {
-        cargs->args[cargs->argscount].key = $1;
-        cargs->args[cargs->argscount].value = $3;
-        cargs->argscount++;
-      }
+      /* arg * farg; */
+      /* if(cargs->argscount > 0) { */
+      /*   farg = find_iden($1, cargs->args, cargs->argscount, 0); */
+      /* } */
+      /* if(!farg) { */
+      /*   cargs->args[cargs->argscount].key = $1; */
+      /*   cargs->argscount++; */
+      /* } */
     }
     | OPBRA IDFUNC ID LT NUM COL {
+      printf("if!!!\n");
       if(strcmp($2, ":if") == 0) {
-        struct scope sc = {
+        struct scope * body = find_body(cscope);
+        struct scope second_structure = {
           .type = "if",
           .scopescount = 2,
-          .scopes = {
-            &(struct scope) {
-              .type = "comp",
-              .extra = "<",
-              .scopescount = 2,
-              .scopes = {
-                &(struct scope) {
-                  .type = "iden",
-                  .extra = $3
-                },
-                &(struct scope) {
-                  .type = "number",
-                  .value = $5
-                },
-              }
-            }
-          }
         };
-        cscope->scopescount++;
-        cscope->scopes[cscope->scopescount] = &sc;
+        struct scope comp = {
+          .type = "comp",
+          .extra = "<",
+          .scopescount = 2,
+        };
+        struct scope c1 = {
+          .type = "iden",
+          .extra = $3
+        };
+        struct scope c2 = {
+          .type = "number",
+          .value = $5
+        };
+        comp.scopes[0] = &c1;
+        comp.scopes[1] = &c2;
+        struct scope ifbody = {
+          .type = "body",
+          .scopescount = 0
+        };
+        second_structure.scopes[0] = &comp;
+        second_structure.scopes[1] = &ifbody;
+        body->scopes[body->scopescount] = &second_structure;
+        body->scopescount++;
         prevscope = cscope;
-        cscope = &sc;
+        cscope = &second_structure; 
       }
     }
     | CLBRA NLINE {
       cscope = prevscope;
+      printf("the end!!!");
     }
     | NLINE {
       //do nothing!!!

@@ -203,7 +203,7 @@ void assignment_case() {
     }
   };
   exec(&global);
-  printf(">>>>> return_value %d\n", global.scopes[0]->return_value);
+  printf(">>>>> return_value %d\n", global.args[0].value);
   assert(global.args[0].value == 997);
 }
 
@@ -821,24 +821,22 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  // if statement executing the if statement
   if_case();
   
-  assignment_case();
+  //assignment_case();
 
-  fcall_case();
+  //fcall_case();
 
-  // binary_op case 
-  binary_op_case();
+  //binary_op_case();
   
-  recursive_case();
+  //recursive_case();
 
   // doing operation inside the arguments 
-  fcall_with_scopes();
+  //fcall_with_scopes();
 
-  early_return();
+  //early_return();
 
   //fibonacci case
-  fib();
+  //fib();
   return 0;
 }
