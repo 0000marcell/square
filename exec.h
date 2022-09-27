@@ -1,30 +1,24 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-typedef struct {
+struct arg {
   char *key;
   int  value;
   int  skip_update;
-} arg;
-
-typedef struct {
-  char * cur;
-  char * cal;
-} vmap;
+  struct arg * next; 
+};
 
 struct scope {
   char * type;
   char * extra;
-  int argscount;
-  arg args[100];
-  vmap vmap;
+  struct arg * args;
   int value;
-  int scopescount;
-  struct scope *scopes[100];
+  struct scope * scopes;
+  struct scope * next; 
   int return_value;
 };
 
-arg * find_iden(char * str, arg * args, int argscount, int abort);
+struct arg * find_iden(char * str, struct arg * args, int abort);
 
 void exec(struct scope * global);
 

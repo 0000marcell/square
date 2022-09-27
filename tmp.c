@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#
 
 typedef struct {
   char *key;
@@ -66,6 +67,7 @@ int main() {
   struct scope * body = global.scopes[0];
 
   int i = 0;
+  
   while(i < 2) {
     struct scope *sc1 = (struct scope *) malloc(sizeof(struct scope));
     (sc1)->type = "if";

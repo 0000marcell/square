@@ -6,65 +6,62 @@
 struct scope * GLOBAL_SCOPE;
 int EARLY_RETURN = 0;
 
-arg * find_iden(char * str, arg * args, int argscount, int abort) {
-  int i = 0;
-  arg * result;
+struct arg * find_iden(char * str, struct arg * args, int abort) {
   int didfind = 0;
-  while(i < argscount) {
-    if(strcmp(args[i].key, str) == 0) {
-      result = &args[i];
+  struct arg * item = args;
+  while(item != NULL) {
+    if(strcmp(str, item->key) == 0) {
       didfind = 1;
       break;
     }
+    item = item->next; 
   }
   if(didfind == 0 && abort == 1) {
     printf("ERROR: could not find arg: %s\n", str);
     exit(1);
   }
-  return result;
+  return item;
 }
 
 
 struct scope * find_func(char * fname) {
-  int i = 0;
-  struct scope * result;
   int didfind = 0;
-  while(i < GLOBAL_SCOPE->scopescount) {
-    if(strcmp(GLOBAL_SCOPE->scopes[i]->type, "function") == 0 &&
-       strcmp(GLOBAL_SCOPE->scopes[i]->extra, fname) == 0) {
-      result = GLOBAL_SCOPE->scopes[i];
+  struct scope * item = GLOBAL_SCOPE->scopes;
+  while(item != NULL) {
+    if(strcmp(item->type, "function") == 0 &&
+       strcmp(item->extra, fname) == 0) {
       didfind = 1;
       break;
     }
-    i++;
+    item = item->next;
   }
   if(didfind == 0) {
     printf("ERROR: could not find function with name: %s\n", fname);
     exit(1);
   }
-  return result;
+  return item;
 }
 
-void update_args(arg * fargs, int fargscount, arg * nargs, int nargscount) {
-  int i = 0;
-  while(i < fargscount) {
-    int j = 0;
-    while(j < nargscount) {
-      if(strcmp(fargs[i].key, nargs[j].key) == 0) {
-        if(fargs[i].skip_update != 1) {
-          fargs[i].value = nargs[j].value;
+void update_args(struct arg * fargs, struct arg * nargs) {
+  struct arg * fitems = fargs;
+  struct arg * nitems = nargs;
+  while(fitems != NULL) {
+    while(nitems != NULL) {
+      if(strcmp(fitems->key, nitems->key) == 0) {
+        if(fitems->skip_update != 1) {
+          fitems->value = nitems->value;
         }
       }
-      j++;
+      nitems = nitems->next;
     }
-    i++;
+    fitems = fitems->next;
   }
 }
 
-int find_bin_op(struct scope * node, arg * args, int argscount) {
+int find_bin_op(struct scope * node, struct arg * args) {
   int result;
   if(strcmp(node->type, "iden") == 0) {
-    result = find_iden(node->extra, args, argscount, 1)->value;
+    result = find_iden(node->extra, args, 1)->value;
   } else {
     if(strcmp(node->type, "number") == 0) {
       result = node->value;
@@ -76,24 +73,24 @@ int find_bin_op(struct scope * node, arg * args, int argscount) {
   return result;
 }
 
-int traverse(struct scope * node, arg * args, int argscount) {
+int traverse(struct scope * node, struct arg * args) {
   printf("node type: %s\n", node->type);
   int result;
   // case binary_op
   if(strcmp(node->type, "binary_op") == 0){
     int v1;
-    if(strcmp(node->scopes[0]->type, "fcall") == 0) {
-      v1 = traverse(node->scopes[0], args, argscount);
+    if(strcmp(node->scopes->type, "fcall") == 0) {
+      v1 = traverse(node->scopes, args);
       EARLY_RETURN = 0;
     } else {
-      v1 = find_bin_op(node->scopes[0], args, argscount);    
+      v1 = find_bin_op(node->scopes, args);    
     }
     int v2;
-    if(strcmp(node->scopes[1]->type, "fcall") == 0) {
-      v2 = traverse(node->scopes[1], args, argscount);
+    if(strcmp(node->scopes->next->type, "fcall") == 0) {
+      v2 = traverse(node->scopes->next, args);
       EARLY_RETURN = 0;
     } else {
-      v2 = find_bin_op(node->scopes[1], args, argscount);
+      v2 = find_bin_op(node->scopes->next, args);
     }
 
     if(strcmp(node->extra, "+") == 0) {
@@ -111,55 +108,55 @@ int traverse(struct scope * node, arg * args, int argscount) {
   if(strcmp(node->type, "fcall") == 0){
     struct scope * func = find_func(node->extra);
     // syncs the values of fcall with global, takes in to consideration skip_update 
-    update_args(node->args, node->argscount, args, argscount);
+    update_args(node->args, args);
     // if fcall has scope we execute the scope before attributing the value to the argument
-    if(node->scopescount == 1) {
-      result = traverse(node->scopes[0], node->args, node->argscount);
+    if(node->scopes != NULL) {
+      result = traverse(node->scopes, node->args);
       printf("body exec result: %d\n", result);
     }
     // this function syncs the args values on fcall with the args of the calling function
-    update_args(func->args, func->argscount, node->args, node->argscount);
-    // func->scopes[0] is always the body of the function
-    result = traverse(func->scopes[0], func->args, func->argscount);
+    update_args(func->args, node->args);
+    // func->scopes is always the body of the function
+    result = traverse(func->scopes, func->args);
     EARLY_RETURN = 0;
     node->return_value = result;
     return result;
   }
   // case if
   if(strcmp(node->type, "if") == 0) {
-    struct scope * comp = node->scopes[0];
-    struct scope * body = node->scopes[1];
+    struct scope * comp = node->scopes;
+    struct scope * body = node->scopes->next;
     int v1;
     int v2;
-    if(strcmp(comp->scopes[0]->type, "iden") == 0) {
-      v1 = find_iden(comp->scopes[0]->extra,args, argscount, 1)->value;
+    if(strcmp(comp->scopes->type, "iden") == 0) {
+      v1 = find_iden(comp->scopes->extra,args, 1)->value;
     } else {
-      v1 = comp->scopes[0]->value;
+      v1 = comp->scopes->value;
     }
-    if(strcmp(comp->scopes[1]->type, "iden") == 0) {
-      v2 = find_iden(comp->scopes[1]->extra,args, argscount, 1)->value;
+    if(strcmp(comp->scopes->next->type, "iden") == 0) {
+      v2 = find_iden(comp->scopes->next->extra,args, 1)->value;
     } else {
-      v2 = comp->scopes[1]->value;
+      v2 = comp->scopes->next->value;
     }
 
     if(strcmp(comp->extra, "<") == 0) {
       if(v1 < v2) {
         // executes the body
-        result = traverse(body, args, argscount);
+        result = traverse(body, args);
       }
     }
 
     if(strcmp(comp->extra, ">") == 0) {
       if(v1 > v2) {
         // executes the body
-        result = traverse(body, args, argscount);
+        result = traverse(body, args);
       }
     }
 
     if(strcmp(comp->extra, "==") == 0) {
       if(v1 == v2) {
         // executes the body
-        result = traverse(body, args, argscount);
+        result = traverse(body, args);
       }
     }
 
@@ -167,21 +164,21 @@ int traverse(struct scope * node, arg * args, int argscount) {
   }
   // case assignment
   if(strcmp(node->type, "assignment") == 0) {
-    if(strcmp(node->scopes[0]->type, "iden") == 0) {
-      arg * iden = find_iden(node->scopes[0]->extra, args, argscount, 1); 
+    if(strcmp(node->scopes->type, "iden") == 0) {
+      struct arg * iden = find_iden(node->scopes->extra, args, 1); 
 
-      if(strcmp(node->scopes[1]->type, "number") == 0) {
-        iden->value =  node->scopes[1]->value;
+      if(strcmp(node->scopes->next->type, "number") == 0) {
+        iden->value =  node->scopes->next->value;
       }
 
-      if(strcmp(node->scopes[1]->type, "fcall") == 0) {
-        result = traverse(node->scopes[1], args, argscount);
+      if(strcmp(node->scopes->next->type, "fcall") == 0) {
+        result = traverse(node->scopes->next, args);
         EARLY_RETURN = 0;
         iden->value = result;
       }
 
-      if(strcmp(node->scopes[1]->type, "binary_op") == 0) {
-        result = traverse(node->scopes[1], args, argscount);
+      if(strcmp(node->scopes->type, "binary_op") == 0) {
+        result = traverse(node->scopes->next, args);
         iden->value = result;
       }
       return result;
@@ -191,31 +188,29 @@ int traverse(struct scope * node, arg * args, int argscount) {
     }
   }
   if(strcmp(node->type, "iden") == 0) {
-    return find_iden(node->extra, args, argscount, 1)->value;
+    return find_iden(node->extra, args, 1)->value;
   }
   if(strcmp(node->type, "number") == 0) {
     return node->value;
   }
-  if(node->scopescount > 0) {
-    int i = 0;
-    while(i < node->scopescount) {
-      // we do not execute functions definition
-      if(strcmp(node->scopes[i]->type, "function") != 0) {
-        result = traverse(node->scopes[i], args, argscount);  
-      }
-      if(strcmp(node->scopes[i]->type, "return") == 0 || 
-         EARLY_RETURN == 1) {
-        EARLY_RETURN = 1;
-        break;
-      }
-      i++;
+  struct scope * inode = node->scopes;
+  while(inode != NULL) {
+    // we do not execute functions definition
+    if(strcmp(inode->type, "function") != 0) {
+      result = traverse(inode, args);  
     }
+    if(strcmp(inode->type, "return") == 0 || 
+       EARLY_RETURN == 1) {
+      EARLY_RETURN = 1;
+      break;
+    }
+    inode = inode->next;
   }
   node->return_value = result;
   return node->return_value;
 }
 
 void exec(struct scope * global) {
-  GLOBAL_SCOPE = global->scopes[0];
-  traverse(global, global->args, global->argscount);
+  GLOBAL_SCOPE = global->scopes;
+  traverse(global, global->args);
 }
