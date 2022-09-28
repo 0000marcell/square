@@ -177,7 +177,7 @@ int traverse(struct scope * node, struct arg * args) {
         iden->value = result;
       }
 
-      if(strcmp(node->scopes->type, "binary_op") == 0) {
+      if(strcmp(node->scopes->next->type, "binary_op") == 0) {
         result = traverse(node->scopes->next, args);
         iden->value = result;
       }
