@@ -1,87 +1,83 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#
 
-typedef struct {
+struct arg {
   char *key;
   int  value;
-} arg;
+  int  skip_update;
+  struct arg * next; 
+};
 
 struct scope {
   char * type;
   char * extra;
-  int argscount;
-  arg args[100];
+  struct arg * args;
   int value;
-  int scopescount;
-  struct scope * scopes[100];
+  struct scope * scopes;
+  struct scope * next; 
   int return_value;
 };
-
-void changestruct(struct scope * a) {
-  a->type = "marcell";
-}
-
-void c2(int a[100]) {
-  a[0] = 99;
-}
-
-arg find_iden(char * str, arg * args, int argscount) {
-  int i = 0;
-  arg result;
-  int didfind = 0;
-  while(i < argscount) {
-    if(strcmp(args[i].key, str) == 0) {
-      result = args[i];
-      didfind = 1;
-      break;
-    }
-  }
-  if(didfind == 0) {
-    printf("ERROR: could not find arg: %s\n", str);
-    exit(1);
-  }
-  return result;
-}
-
-void func(int n, int abort) {
-  printf("func!\n");
-}
 
 struct scope global = {
   .type = "function",
   .extra = "global",
   .return_value = 0,
-  .scopescount = 3,
-  .scopes = {
-    &(struct scope) {
-      .type = "body"
+  .scopes = &(struct scope) {
+    .type = "body",
+    .scopes = &(struct scope) {
+      .type = "if",
+      .next = &(struct scope) {
+        .type = "id",
+        .scopes = &(struct scope) {
+          .type = "fcall"
+        },
+        .next = &(struct scope) {
+          .type = "number",
+          .next = &(struct scope) {
+            .type = "assignment",
+          }
+        }
+      }
     }
   }
 };
 
+struct scope * find_body(struct scope * sc) {
+  int didfind = 0;
+  struct scope * tmp = sc;
+  while(tmp != NULL) {
+    if(strcmp(tmp->type, "body") == 0) {
+      didfind = 1;
+      break;
+    }
+    tmp = tmp->next;
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not find body on scope %s\n", sc->type);
+    exit(1);
+  }
+  return tmp;
+}
+
+struct scope * find_body_next_address(struct scope * sc) {
+  struct scope * body = find_body(sc->scopes);
+  struct scope * tmp = body->scopes;
+  while(tmp != NULL) {
+    if(tmp->next == NULL) {
+      break;
+    }
+    tmp = tmp->next;
+  };
+  return tmp;
+}
+
 
 int main() {
-
-  struct scope * body = global.scopes[0];
-
-  int i = 0;
-  
-  while(i < 2) {
-    struct scope *sc1 = (struct scope *) malloc(sizeof(struct scope));
-    (sc1)->type = "if";
-    body->scopes[i] = sc1; 
-    struct scope *sc2 = (struct scope *) malloc(sizeof(struct scope));
-    (sc2)->argscount = i;
-    body->scopes[i]->scopes[0] = sc2; 
-    printf("before argscount: %d\n", body->scopes[i]->scopes[0]->argscount);
-    printf("address: %p\n", &body->scopes[i]);
-    i++;
-  }
-  printf("after argscount: %d\n", body->scopes[0]->scopes[0]->argscount);
-  printf("after argscount: %d\n", body->scopes[1]->scopes[0]->argscount);
-  printf("address : %p\n", &body->scopes[0]);
-  printf("address : %p\n", &body->scopes[1]);
-  return 0;
+  struct scope * result = find_body_next_address(&global);
+  result->next = (struct scope *) malloc(sizeof(struct scope));
+  result->next->type = "found";
+  printf("result: ");
+  free(result->next);
+  return 0;  
 }

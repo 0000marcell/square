@@ -412,63 +412,46 @@ void recursive_case() {
               .next = &(struct scope) {
                 .type = "body",
                 .scopes = &(struct scope) {
-                            .type = "assignment",
-                            .scopescount = 2,
-                            .scopes = {
-                              &(struct scope) {
-                                .type = "iden",
-                                .extra = "n"
-                              },
-                              &(struct scope) {
-                                .type = "binary_op",
-                                .extra = "+",
-                                .scopescount = 2,
-                                .scopes = {
-                                  &(struct scope) {
-                                    .type = "iden",
-                                    .extra = "n"
-                                  },
-                                  &(struct scope) {
-                                    .type = "number",
-                                    .value = 1
-                                  },
-                                },
-                              },
-                            },
-                          },
-                          &(struct scope) {
-                            .type = "fcall",
-                            .extra = "fib",
-                            .argscount = 1,
-                            .args = {
-                              {
-                                .key = "n",
-                              }
-                            },
-                          },   
-                        },
-                      },
-                    },
-                  },
-                  &(struct scope) {
+                  .type = "assignment",
+                  .scopes = &(struct scope) {
                     .type = "iden",
-                    .extra = "n"
-                  }
-                }
-              }
+                    .extra = "n",
+                    .next = &(struct scope) {
+                      .type = "binary_op",
+                      .extra = "+",
+                      .scopes = &(struct scope) {
+                        .type = "iden",
+                        .extra = "n",
+                        .next = &(struct scope) {
+                          .type = "number",
+                          .value = 1
+                        }
+                      }
+                    }
+                  },
+                  .next = &(struct scope) {
+                    .type = "fcall",
+                    .extra = "fib",
+                    .args = &(struct arg){
+                      .key = "n",
+                    }
+                  },
+                },
+              },
+            },
+            .next = &(struct scope) {
+              .type = "iden",
+              .extra = "n"
             }
           },
-          &(struct scope) {
-            .type = "fcall",
-            .extra = "fib",
-            .argscount = 1,
-            .args = {
-              {
-                .key = "n",
-                .skip_update = 1,
-                .value = 1
-              }
-            }
+        },
+        .next = &(struct scope) {
+          .type = "fcall",
+          .extra = "fib",
+          .args = &(struct arg) {
+            .key = "n",
+            .skip_update = 1,
+            .value = 1
           },
         }
       }
@@ -580,22 +563,22 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  //if_case();
+  if_case();
   
-  //assignment_case();
+  assignment_case();
 
-  //fcall_case();
+  fcall_case();
 
-  //binary_op_case();
+  binary_op_case();
   
   recursive_case();
 
   // doing operation inside the arguments 
-  //fcall_with_scopes();
+  fcall_with_scopes();
 
-  //early_return();
+  early_return();
 
   //fibonacci case
-  //fib();
+  fib();
   return 0;
 }
