@@ -7,11 +7,23 @@ struct scope * GLOBAL_SCOPE;
 int EARLY_RETURN = 0;
 
 struct arg * find_iden(char * str, struct arg * args, int abort) {
+  if(args == NULL) {
+    printf("ERROR: args is a NULL pointer\n");
+    exit(1);
+  }
   int didfind = 0;
   struct arg * item = args;
+  if(item->key == NULL) {
+    return item;
+  }
   while(item != NULL) {
     if(strcmp(str, item->key) == 0) {
       didfind = 1;
+      break;
+    }
+    if(item->next == NULL) {
+      item->next = (struct arg *) malloc(sizeof(struct arg));
+      item = item->next;
       break;
     }
     item = item->next; 
@@ -165,7 +177,9 @@ int traverse(struct scope * node, struct arg * args) {
   // case assignment
   if(strcmp(node->type, "assignment") == 0) {
     if(strcmp(node->scopes->type, "iden") == 0) {
-      struct arg * iden = find_iden(node->scopes->extra, args, 1); 
+      struct arg * iden = find_iden(node->scopes->extra, args, 0); 
+      // sets the key just in case is empty
+      iden->key = node->scopes->extra;
 
       if(strcmp(node->scopes->next->type, "number") == 0) {
         iden->value =  node->scopes->next->value;

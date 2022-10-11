@@ -52,7 +52,10 @@ lessthan    ([<])
   return (ID); 
 }
 {nline} { return (NLINE); }
-{equal} { return (EQ); }
+{equal} { 
+  yylval.string = strdup(yytext);
+  return (EQ); 
+}
 
 %%
 

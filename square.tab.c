@@ -117,6 +117,8 @@ struct scope global = {
   .type = "function",
   .extra = "global",
   .return_value = 0,
+  .args = &(struct arg) {
+  },
   .scopes = &(struct scope) {
     .type = "body",
   }
@@ -129,7 +131,7 @@ struct scope * prevargs = &global;
 
 
 
-#line 133 "square.tab.c"
+#line 135 "square.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -178,7 +180,8 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 18,                  /* $accept  */
   YYSYMBOL_prog = 19,                      /* prog  */
   YYSYMBOL_stmts = 20,                     /* stmts  */
-  YYSYMBOL_stmt = 21                       /* stmt  */
+  YYSYMBOL_stmt = 21,                      /* stmt  */
+  YYSYMBOL_ifcomp = 22                     /* ifcomp  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -506,16 +509,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  11
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   13
+#define YYLAST   17
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  18
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  4
+#define YYNNTS  5
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  8
+#define YYNRULES  11
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  18
+#define YYNSTATES  22
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   272
@@ -566,7 +569,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    82,    82,    85,    86,    88,   103,   128,   132
+       0,    86,    86,    89,    90,    92,   106,   135,   139,   144,
+     144,   144
 };
 #endif
 
@@ -584,7 +588,8 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUM", "OP",
   "SEMICOLUMN", "PRINT", "OPBRA", "CLBRA", "IDFUNC", "GT", "LT", "OTHER",
-  "ID", "COM", "COL", "NLINE", "EQ", "$accept", "prog", "stmts", "stmt", YY_NULLPTR
+  "ID", "COM", "COL", "NLINE", "EQ", "$accept", "prog", "stmts", "stmt",
+  "ifcomp", YY_NULLPTR
 };
 
 static const char *
@@ -608,8 +613,9 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -7,    -6,   -14,   -13,   -15,     5,   -15,    -7,    -5,   -15,
-       4,   -15,   -15,    -1,   -15,     8,    -3,   -15
+      -7,    -2,   -14,    -9,   -15,     3,   -15,    -7,    -3,   -15,
+       9,   -15,   -15,    -6,   -15,   -15,   -15,    -4,    11,   -15,
+       0,   -15
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -618,19 +624,20 @@ static const yytype_int8 yypact[] =
 static const yytype_int8 yydefact[] =
 {
        3,     0,     0,     0,     8,     0,     2,     3,     0,     7,
-       0,     1,     4,     0,     5,     0,     0,     6
+       0,     1,     4,     0,     5,    10,     9,     0,     0,    11,
+       0,     6
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -15,   -15,     6,   -15
+     -15,   -15,    10,   -15,   -15
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     5,     6,     7
+       0,     5,     6,     7,    18
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -638,14 +645,14 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     2,     9,     8,    10,    11,     3,    14,    13,     4,
-      15,    16,    17,    12
+       1,     2,     9,    11,    15,    16,     3,     8,    10,     4,
+      13,    17,    14,    19,    20,    21,     0,    12
 };
 
 static const yytype_int8 yycheck[] =
 {
-       7,     8,    16,     9,    17,     0,    13,     3,    13,    16,
-      11,     3,    15,     7
+       7,     8,    16,     0,    10,    11,    13,     9,    17,    16,
+      13,    17,     3,    17,     3,    15,    -1,     7
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -653,19 +660,22 @@ static const yytype_int8 yycheck[] =
 static const yytype_int8 yystos[] =
 {
        0,     7,     8,    13,    16,    19,    20,    21,     9,    16,
-      17,     0,    20,    13,     3,    11,     3,    15
+      17,     0,    20,    13,     3,    10,    11,    17,    22,    17,
+       3,    15
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    18,    19,    20,    20,    21,    21,    21,    21
+       0,    18,    19,    20,    20,    21,    21,    21,    21,    22,
+      22,    22
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3,     6,     2,     1
+       0,     2,     1,     0,     2,     3,     6,     2,     1,     1,
+       1,     2
 };
 
 
@@ -1129,7 +1139,7 @@ yyreduce:
   switch (yyn)
     {
   case 5: /* stmt: ID EQ NUM  */
-#line 88 "square.y"
+#line 92 "square.y"
                 {
       printf("assignment!!!\n");
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
@@ -1143,60 +1153,63 @@ yyreduce:
       (ass)->scopes = iden;
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
-      printf("after assignment!\n");
     }
-#line 1149 "square.tab.c"
+#line 1158 "square.tab.c"
     break;
 
-  case 6: /* stmt: OPBRA IDFUNC ID LT NUM COL  */
-#line 103 "square.y"
-                                 {
-      printf("if!!!\n");
-      if(strcmp((yyvsp[-4].string), ":if") == 0) {
-        struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
-        (sif)->type = "if";
-        struct scope * ifbody = (struct scope *) malloc(sizeof(struct scope));
-        (ifbody)->type = "body";
-        struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
-        (iden)->type = "iden";
-        (iden)->extra = (yyvsp[-3].string);
-        struct scope * number = (struct scope *) malloc(sizeof(struct scope));
-        (number)->type = "number";
-        (number)->value = (yyvsp[-1].number);
-        struct scope * comp = (struct scope *) malloc(sizeof(struct scope));
-        (comp)->type = "comp";
-        (comp)->extra = "<";
-        (comp)->scopes = iden; 
-        (comp)->scopes->next = number;
-        (sif)->scopes = comp;
-        (sif)->scopes->next = ifbody;
-        set_body_next_address(cscope, sif);
-        prevscope = cscope;
-        cscope = sif;
+  case 6: /* stmt: OPBRA IDFUNC ID ifcomp NUM COL  */
+#line 106 "square.y"
+                                     {
+      printf(">>>>>>>>>>>>>>>>>>>>>>>> if!!!\n");
+      printf("$5: %i\n", (yyvsp[-1].number)); 
+      printf("$4: %s\n", (yyvsp[-2].string)); 
+      struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
+      (sif)->type = "if";
+      struct scope * ifbody = (struct scope *) malloc(sizeof(struct scope));
+      (ifbody)->type = "body";
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
+      (iden)->type = "iden";
+      (iden)->extra = (yyvsp[-3].string);
+      struct scope * number = (struct scope *) malloc(sizeof(struct scope));
+      (number)->type = "number";
+      (number)->value = (yyvsp[-1].number);
+      struct scope * comp = (struct scope *) malloc(sizeof(struct scope));
+      (comp)->type = "comp";
+      if(strcmp((yyvsp[-2].string), "=") == 0) {
+        (comp)->extra = "==";
+      } else {
+        (comp)->extra = (yyvsp[-2].string);
       }
+      (comp)->scopes = iden; 
+      (comp)->scopes->next = number;
+      (sif)->scopes = comp;
+      (sif)->scopes->next = ifbody;
+      set_body_next_address(cscope, sif);
+      prevscope = cscope;
+      cscope = sif;
     }
-#line 1179 "square.tab.c"
+#line 1192 "square.tab.c"
     break;
 
   case 7: /* stmt: CLBRA NLINE  */
-#line 128 "square.y"
+#line 135 "square.y"
                   {
       cscope = prevscope;
       printf("the end!!!");
     }
-#line 1188 "square.tab.c"
+#line 1201 "square.tab.c"
     break;
 
   case 8: /* stmt: NLINE  */
-#line 132 "square.y"
+#line 139 "square.y"
             {
       //do nothing!!!
     }
-#line 1196 "square.tab.c"
+#line 1209 "square.tab.c"
     break;
 
 
-#line 1200 "square.tab.c"
+#line 1213 "square.tab.c"
 
       default: break;
     }
@@ -1389,7 +1402,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 138 "square.y"
+#line 148 "square.y"
 
 
 int yyerror(char *s)
@@ -1410,6 +1423,9 @@ int main() {
     {
       yyparse();
     }while (!feof(yyin));
+    printf("before exec\n");
+    exec(&global);
+    printf("after exec\n");
     return 0;
 }
 

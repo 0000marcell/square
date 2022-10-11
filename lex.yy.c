@@ -862,14 +862,17 @@ YY_RULE_SETUP
 case 14:
 YY_RULE_SETUP
 #line 55 "square.l"
-{ return (EQ); }
+{ 
+  yylval.string = strdup(yytext);
+  return (EQ); 
+}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 57 "square.l"
+#line 60 "square.l"
 ECHO;
 	YY_BREAK
-#line 872 "lex.yy.c"
+#line 875 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1886,7 +1889,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 57 "square.l"
+#line 60 "square.l"
 
 
 

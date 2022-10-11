@@ -47,6 +47,8 @@ struct scope global = {
   .type = "function",
   .extra = "global",
   .return_value = 0,
+  .args = &(struct arg) {
+  },
   .scopes = &(struct scope) {
     .type = "body",
   }
@@ -68,7 +70,9 @@ struct scope * prevargs = &global;
 %type <string> CLBRA 
 %type <string> GT 
 %type <string> LT 
+%type <string> EQ
 %type <string> ID 
+%type <string> ifcomp 
 %type <string> OP 
 %type	<number> stmt
 
@@ -98,33 +102,38 @@ stmt: ID EQ NUM {
       (ass)->scopes = iden;
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
-      printf("after assignment!\n");
     }
-    | OPBRA IDFUNC ID LT NUM COL {
-      printf("if!!!\n");
-      if(strcmp($2, ":if") == 0) {
-        struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
-        (sif)->type = "if";
-        struct scope * ifbody = (struct scope *) malloc(sizeof(struct scope));
-        (ifbody)->type = "body";
-        struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
-        (iden)->type = "iden";
-        (iden)->extra = $3;
-        struct scope * number = (struct scope *) malloc(sizeof(struct scope));
-        (number)->type = "number";
-        (number)->value = $5;
-        struct scope * comp = (struct scope *) malloc(sizeof(struct scope));
-        (comp)->type = "comp";
-        (comp)->extra = "<";
-        (comp)->scopes = iden; 
-        (comp)->scopes->next = number;
-        (sif)->scopes = comp;
-        (sif)->scopes->next = ifbody;
-        set_body_next_address(cscope, sif);
-        prevscope = cscope;
-        cscope = sif;
+    | OPBRA IDFUNC ID ifcomp NUM COL {
+      struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
+      (sif)->type = "if";
+      struct scope * ifbody = (struct scope *) malloc(sizeof(struct scope));
+      (ifbody)->type = "body";
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
+      (iden)->type = "iden";
+      (iden)->extra = $3;
+      struct scope * number = (struct scope *) malloc(sizeof(struct scope));
+      (number)->type = "number";
+      (number)->value = $5;
+      struct scope * comp = (struct scope *) malloc(sizeof(struct scope));
+      (comp)->type = "comp";
+      if(strcmp($4, "=") == 0) {
+        (comp)->extra = "==";
+      } else {
+        (comp)->extra = $4;
       }
+      (comp)->scopes = iden; 
+      (comp)->scopes->next = number;
+      (sif)->scopes = comp;
+      (sif)->scopes->next = ifbody;
+      set_body_next_address(cscope, sif);
+      prevscope = cscope;
+      cscope = sif;
     }
+    | OPBRA GT IDFUNC ID COL {
+      struct scope * func = (struct scope *) malloc(sizeof(struct scope));
+      (func)->type = "function";
+      (func)->extra = $2;
+    }  
     | CLBRA NLINE {
       cscope = prevscope;
       printf("the end!!!");
@@ -132,6 +141,9 @@ stmt: ID EQ NUM {
     | NLINE {
       //do nothing!!!
     }
+;
+
+ifcomp: LT | GT | EQ EQ
 ;
 
 
@@ -155,6 +167,9 @@ int main() {
     {
       yyparse();
     }while (!feof(yyin));
+    printf("before exec\n");
+    exec(&global);
+    printf("after exec\n");
     return 0;
 }
 

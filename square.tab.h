@@ -77,7 +77,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 75 "square.y"
+#line 79 "square.y"
 
     int number;
     char *string;
