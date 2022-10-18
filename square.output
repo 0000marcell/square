@@ -18,12 +18,13 @@ Grammar
 
     4 stmt: ID EQ NUM
     5     | OPBRA IDFUNC ID ifcomp NUM COL
-    6     | CLBRA NLINE
-    7     | NLINE
+    6     | OPBRA GT IDFUNC ID COL
+    7     | CLBRA NLINE
+    8     | NLINE
 
-    8 ifcomp: LT
-    9       | GT
-   10       | EQ EQ
+    9 ifcomp: LT
+   10       | GT
+   11       | EQ EQ
 
 
 Terminals, with rules where they appear
@@ -34,17 +35,17 @@ Terminals, with rules where they appear
     OP <string> (259)
     SEMICOLUMN (260)
     PRINT (261)
-    OPBRA <string> (262) 5
-    CLBRA <string> (263) 6
-    IDFUNC <string> (264) 5
-    GT <string> (265) 9
-    LT <string> (266) 8
+    OPBRA <string> (262) 5 6
+    CLBRA <string> (263) 7
+    IDFUNC <string> (264) 5 6
+    GT <string> (265) 6 10
+    LT <string> (266) 9
     OTHER (267)
-    ID <string> (268) 4 5
+    ID <string> (268) 4 5 6
     COM (269)
-    COL (270) 5
-    NLINE (271) 6 7
-    EQ <string> (272) 4 10
+    COL (270) 5 6
+    NLINE (271) 7 8
+    EQ <string> (272) 4 11
 
 
 Nonterminals, with rules where they appear
@@ -58,10 +59,10 @@ Nonterminals, with rules where they appear
         on left: 2 3
         on right: 1 3
     stmt <number> (21)
-        on left: 4 5 6 7
+        on left: 4 5 6 7 8
         on right: 3
     ifcomp <string> (22)
-        on left: 8 9 10
+        on left: 9 10 11
         on right: 5
 
 
@@ -84,36 +85,38 @@ State 0
 State 1
 
     5 stmt: OPBRA • IDFUNC ID ifcomp NUM COL
+    6     | OPBRA • GT IDFUNC ID COL
 
     IDFUNC  shift, and go to state 8
+    GT      shift, and go to state 9
 
 
 State 2
 
-    6 stmt: CLBRA • NLINE
+    7 stmt: CLBRA • NLINE
 
-    NLINE  shift, and go to state 9
+    NLINE  shift, and go to state 10
 
 
 State 3
 
     4 stmt: ID • EQ NUM
 
-    EQ  shift, and go to state 10
+    EQ  shift, and go to state 11
 
 
 State 4
 
-    7 stmt: NLINE •
+    8 stmt: NLINE •
 
-    $default  reduce using rule 7 (stmt)
+    $default  reduce using rule 8 (stmt)
 
 
 State 5
 
     0 $accept: prog • $end
 
-    $end  shift, and go to state 11
+    $end  shift, and go to state 12
 
 
 State 6
@@ -134,7 +137,7 @@ State 7
 
     $default  reduce using rule 2 (stmts)
 
-    stmts  go to state 12
+    stmts  go to state 13
     stmt   go to state 7
 
 
@@ -142,98 +145,126 @@ State 8
 
     5 stmt: OPBRA IDFUNC • ID ifcomp NUM COL
 
-    ID  shift, and go to state 13
+    ID  shift, and go to state 14
 
 
 State 9
 
-    6 stmt: CLBRA NLINE •
+    6 stmt: OPBRA GT • IDFUNC ID COL
 
-    $default  reduce using rule 6 (stmt)
+    IDFUNC  shift, and go to state 15
 
 
 State 10
 
-    4 stmt: ID EQ • NUM
+    7 stmt: CLBRA NLINE •
 
-    NUM  shift, and go to state 14
+    $default  reduce using rule 7 (stmt)
 
 
 State 11
+
+    4 stmt: ID EQ • NUM
+
+    NUM  shift, and go to state 16
+
+
+State 12
 
     0 $accept: prog $end •
 
     $default  accept
 
 
-State 12
+State 13
 
     3 stmts: stmt stmts •
 
     $default  reduce using rule 3 (stmts)
 
 
-State 13
+State 14
 
     5 stmt: OPBRA IDFUNC ID • ifcomp NUM COL
 
-    GT  shift, and go to state 15
-    LT  shift, and go to state 16
-    EQ  shift, and go to state 17
+    GT  shift, and go to state 17
+    LT  shift, and go to state 18
+    EQ  shift, and go to state 19
 
-    ifcomp  go to state 18
+    ifcomp  go to state 20
 
 
-State 14
+State 15
+
+    6 stmt: OPBRA GT IDFUNC • ID COL
+
+    ID  shift, and go to state 21
+
+
+State 16
 
     4 stmt: ID EQ NUM •
 
     $default  reduce using rule 4 (stmt)
 
 
-State 15
-
-    9 ifcomp: GT •
-
-    $default  reduce using rule 9 (ifcomp)
-
-
-State 16
-
-    8 ifcomp: LT •
-
-    $default  reduce using rule 8 (ifcomp)
-
-
 State 17
 
-   10 ifcomp: EQ • EQ
-
-    EQ  shift, and go to state 19
-
-
-State 18
-
-    5 stmt: OPBRA IDFUNC ID ifcomp • NUM COL
-
-    NUM  shift, and go to state 20
-
-
-State 19
-
-   10 ifcomp: EQ EQ •
+   10 ifcomp: GT •
 
     $default  reduce using rule 10 (ifcomp)
 
 
+State 18
+
+    9 ifcomp: LT •
+
+    $default  reduce using rule 9 (ifcomp)
+
+
+State 19
+
+   11 ifcomp: EQ • EQ
+
+    EQ  shift, and go to state 22
+
+
 State 20
 
-    5 stmt: OPBRA IDFUNC ID ifcomp NUM • COL
+    5 stmt: OPBRA IDFUNC ID ifcomp • NUM COL
 
-    COL  shift, and go to state 21
+    NUM  shift, and go to state 23
 
 
 State 21
+
+    6 stmt: OPBRA GT IDFUNC ID • COL
+
+    COL  shift, and go to state 24
+
+
+State 22
+
+   11 ifcomp: EQ EQ •
+
+    $default  reduce using rule 11 (ifcomp)
+
+
+State 23
+
+    5 stmt: OPBRA IDFUNC ID ifcomp NUM • COL
+
+    COL  shift, and go to state 25
+
+
+State 24
+
+    6 stmt: OPBRA GT IDFUNC ID COL •
+
+    $default  reduce using rule 6 (stmt)
+
+
+State 25
 
     5 stmt: OPBRA IDFUNC ID ifcomp NUM COL •
 

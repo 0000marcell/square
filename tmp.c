@@ -74,10 +74,14 @@ struct scope * find_body_next_address(struct scope * sc) {
 
 
 int main() {
-  struct scope * result = find_body_next_address(&global);
-  result->next = (struct scope *) malloc(sizeof(struct scope));
-  result->next->type = "found";
-  printf("result: ");
-  free(result->next);
+  char *tmp = ":fib";
+  printf("tmp: %s\n", tmp);
+  tmp++;
+  printf("tmp after: %s\n", tmp);
+  /* struct scope * result = find_body_next_address(&global); */
+  /* result->next = (struct scope *) malloc(sizeof(struct scope)); */
+  /* result->next->type = "found"; */
+  /* printf("result: "); */
+  /* free(result->next); */
   return 0;  
 }

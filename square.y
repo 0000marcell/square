@@ -10,6 +10,36 @@ extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
 
+// finds the key of a argument function
+char * find_func_args(int pos, char * fname) {
+  int didfind = 0;
+  struct scope * tmp = global.scopes;
+  char * result;
+  while(tmp != NULL) {
+    if(strcmp(tmp->type, "function") == 0 &&
+       strcmp(tmp->extra, fname) == 0) {
+
+      struct arg * atmp = tmp->args;      
+      int count = 1;
+      while(atmp !== NULL) {
+        if(pos == count) {
+          result = atmp->key;
+          didfind = 1;
+          break;
+        }
+        atmp = atmp->next;
+        pos++;
+      }
+    }
+    tmp = tmp->next;
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not argument key on function definition %s\n", fname);
+    exit(1);
+  }
+  return result;
+}
+
 struct scope * find_body(struct scope * sc) {
   int didfind = 0;
   struct scope * tmp = sc;
@@ -90,7 +120,6 @@ stmts:
      | stmt stmts 
 
 stmt: ID EQ NUM {
-      printf("assignment!!!\n");
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
       struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
@@ -102,6 +131,31 @@ stmt: ID EQ NUM {
       (ass)->scopes = iden;
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
+    }
+    | ID EQ OPBRA IDFUNC NUM CLBRA {
+      struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
+      (ass)->type = "assignment";
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
+      (iden)->type = "iden";
+      (iden)->extra = $1;
+      (ass)->scopes = iden;
+      struct scope * fcall = (struct scope *) malloc(sizeof(struct scope));
+      (fcall)->type = "fcall";
+      (fcall)->extra = $4;
+      (fcall)->extra++;
+      (iden)->next = fcall;
+      struct arg * = (struct arg *) malloc(sizeof(struct arg));
+      // I need to create a function that will find the value of the variable
+      // in the function definition
+      (arg)->key = find_func_args(1);
+      (arg)->skip_update = 1;
+      (arg)->value = $5;
+    }
+    | ID {
+      struct scope * id = (struct scope *) malloc(sizeof(struct scope)); 
+      (id)->type = "iden";
+      (id)->extra = $1;
+      set_body_next_address(cscope, id);
     }
     | OPBRA IDFUNC ID ifcomp NUM COL {
       struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
@@ -132,7 +186,17 @@ stmt: ID EQ NUM {
     | OPBRA GT IDFUNC ID COL {
       struct scope * func = (struct scope *) malloc(sizeof(struct scope));
       (func)->type = "function";
-      (func)->extra = $2;
+      (func)->extra = $3;
+      (func)->extra++;
+      struct arg * args = (struct arg *) malloc(sizeof(struct arg));
+      (arg)->key = $4
+      (func)->args = arg; 
+      struct scope * body = (struct scope *) malloc(sizeof(struct scope));
+      (body)->type = "body";
+      (func)->scopes = body; 
+      set_body_next_address(cscope, func);
+      prevscope = cscope;
+      cscope = func;
     }  
     | CLBRA NLINE {
       cscope = prevscope;
