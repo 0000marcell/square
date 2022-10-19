@@ -175,6 +175,18 @@ int traverse(struct scope * node, struct arg * args) {
     return result;
   }
   // case assignment
+  if(strcmp(node->type, "print") == 0) {
+    if(strcmp(node->scopes->type, "number") == 0) {
+      printf("%d\n", node->scopes->value);
+      return node->scopes->value;
+    }
+    if(strcmp(node->scopes->type, "iden") == 0) {
+      struct arg * iden = find_iden(node->scopes->extra, args, 0); 
+      printf("%d\n", iden->value);
+      return iden->value;
+    }
+  }
+  // case assignment
   if(strcmp(node->type, "assignment") == 0) {
     if(strcmp(node->scopes->type, "iden") == 0) {
       struct arg * iden = find_iden(node->scopes->extra, args, 0); 

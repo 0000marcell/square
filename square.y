@@ -10,36 +10,6 @@ extern FILE *yyin;
 int yylex();
 int yyerror(char *s);
 
-// finds the key of a argument function
-char * find_func_args(int pos, char * fname) {
-  int didfind = 0;
-  struct scope * tmp = global.scopes;
-  char * result;
-  while(tmp != NULL) {
-    if(strcmp(tmp->type, "function") == 0 &&
-       strcmp(tmp->extra, fname) == 0) {
-
-      struct arg * atmp = tmp->args;      
-      int count = 1;
-      while(atmp !== NULL) {
-        if(pos == count) {
-          result = atmp->key;
-          didfind = 1;
-          break;
-        }
-        atmp = atmp->next;
-        pos++;
-      }
-    }
-    tmp = tmp->next;
-  }
-  if(didfind == 0) {
-    printf("ERROR: could not argument key on function definition %s\n", fname);
-    exit(1);
-  }
-  return result;
-}
-
 struct scope * find_body(struct scope * sc) {
   int didfind = 0;
   struct scope * tmp = sc;
@@ -88,6 +58,36 @@ struct scope * cscope = &global;
 struct scope * prevscope = &global;
 struct scope * cargs = &global;
 struct scope * prevargs = &global;
+
+// finds the key of a argument function
+char * find_func_args(int pos, char * fname) {
+  int didfind = 0;
+  struct scope * tmp = global.scopes->scopes;
+  char * result;
+  while(tmp != NULL) {
+    if(strcmp(tmp->type, "function") == 0 &&
+       strcmp(tmp->extra, fname) == 0) {
+
+      struct arg * atmp = tmp->args;      
+      int count = 1;
+      while(atmp != NULL) {
+        if(pos == count) {
+          result = atmp->key;
+          didfind = 1;
+          break;
+        }
+        atmp = atmp->next;
+        pos++;
+      }
+    }
+    tmp = tmp->next;
+  }
+  if(didfind == 0) {
+    printf("ERROR: could not argument key on function definition %s\n", fname);
+    exit(1);
+  }
+  return result;
+}
 
 
 %}
@@ -144,12 +144,17 @@ stmt: ID EQ NUM {
       (fcall)->extra = $4;
       (fcall)->extra++;
       (iden)->next = fcall;
-      struct arg * = (struct arg *) malloc(sizeof(struct arg));
+      struct arg * farg = (struct arg *) malloc(sizeof(struct arg));
       // I need to create a function that will find the value of the variable
       // in the function definition
-      (arg)->key = find_func_args(1);
-      (arg)->skip_update = 1;
-      (arg)->value = $5;
+      (farg)->key = find_func_args(1, (fcall)->extra);
+      (farg)->skip_update = 1;
+      (farg)->value = $5;
+      (fcall)->args = farg;
+      set_body_next_address(cscope, ass);
+    }
+    | OPBRA PRINT ID CLBRA {
+      //$3
     }
     | ID {
       struct scope * id = (struct scope *) malloc(sizeof(struct scope)); 
@@ -189,8 +194,8 @@ stmt: ID EQ NUM {
       (func)->extra = $3;
       (func)->extra++;
       struct arg * args = (struct arg *) malloc(sizeof(struct arg));
-      (arg)->key = $4
-      (func)->args = arg; 
+      (args)->key = $4;
+      (func)->args = args; 
       struct scope * body = (struct scope *) malloc(sizeof(struct scope));
       (body)->type = "body";
       (func)->scopes = body; 

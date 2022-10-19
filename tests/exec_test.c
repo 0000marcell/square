@@ -113,6 +113,57 @@ void if_case() {
   assert(global.return_value == 999);
 }
 
+void print_case() {
+  printf("running tests >>>>>>>>>>>\n");
+  struct scope global = {
+    .type = "function",
+    .extra = "global",
+    .return_value = 0,
+    .args = &(struct arg) {
+      .key = "n",
+      .value = 1 
+    },
+    .scopes = &(struct scope) {
+      .type = "body",
+      .scopes = &(struct scope) {
+        .type = "if",
+        .scopes = &(struct scope) {
+          .type = "comp",
+          .extra = "<",
+          .scopes = &(struct scope) {
+            .type = "iden",
+            .extra = "n",
+            .next = &(struct scope) {
+              .type = "number",
+              .value = 2
+            },
+          },
+          .next = &(struct scope) {
+            .type = "body",
+            .scopes = &(struct scope) {
+              .type = "print",
+              .scopes = &(struct scope) {
+                .type = "number",
+                .value = 999
+              },
+              .next = &(struct scope) {
+                .type = "print",
+                .scopes = &(struct scope) {
+                  .type = "iden",
+                  .extra = "n"
+                }
+              }
+            },
+          }
+        }
+      }
+    }
+  };
+  exec(&global);
+  printf(">>>>> return_value %d\n", global.return_value);
+  assert(global.return_value == 1);
+}
+
 void assignment_case() {
   printf("running tests >>>>>>>>>>>\n");
   struct scope global = {
@@ -563,22 +614,26 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  if_case();
+  //if_case();
   
-  assignment_case();
+  //assignment_case();
 
-  fcall_case();
+  //fcall_case();
 
-  binary_op_case();
+  //binary_op_case();
   
-  recursive_case();
+  //recursive_case();
 
   // doing operation inside the arguments 
-  fcall_with_scopes();
+  //fcall_with_scopes();
 
-  early_return();
+  //early_return();
 
   //fibonacci case
-  fib();
+  //fib();
+
+  // print case
+  print_case();
+
   return 0;
 }
