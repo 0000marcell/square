@@ -6,10 +6,11 @@ the language will have the following syntax.
 
 ```
 [>:fib n:
-  [:if n == 1: 0]
-  [:if n == 2: 1]
+  [:if n < 3:
+    return n - 1
+  ]
   [:if n > 2: 
-    [:fib n-1] + [:fib n-2]
+    [:fib n - 1] + [:fib n - 2]
   ]
 ]
 [:fib 10]

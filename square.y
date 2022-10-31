@@ -54,6 +54,8 @@ struct scope global = {
   }
 };
 
+int IS_IDEN = 0;
+
 struct scope * cscope = &global;
 struct scope * prevscope = &global;
 struct scope * cargs = &global;
@@ -89,10 +91,20 @@ char * find_func_args(int pos, char * fname) {
   return result;
 }
 
+;
 
 %}
 
-%token NUM OP SEMICOLUMN PRINT OPBRA CLBRA IDFUNC GT LT OTHER ID COM COL NLINE EQ
+%token NUM OP SEMICOLUMN PRINT RETURN OPBRA CLBRA IDFUNC GT LT OTHER ID COM COL NLINE EQ
+
+%union{
+  int number;
+  char *string;
+  union StringNumber {
+    int i;
+    char *s;
+  } strnum;
+}
 
 %type <number> NUM
 %type <string> IDFUNC 
@@ -103,13 +115,9 @@ char * find_func_args(int pos, char * fname) {
 %type <string> EQ
 %type <string> ID 
 %type <string> ifcomp 
+%type <strnum> param 
 %type <string> OP 
 %type	<number> stmt
-
-%union{
-    int number;
-    char *string;
-}
 
 %%
 
@@ -132,6 +140,8 @@ stmt: ID EQ NUM {
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
     }
+    | ID EQ OPBRA IDFUNC ID OP NUM CLBRA {
+    }
     | ID EQ OPBRA IDFUNC NUM CLBRA {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
@@ -153,9 +163,47 @@ stmt: ID EQ NUM {
       (fcall)->args = farg;
       set_body_next_address(cscope, ass);
     }
-    | OPBRA PRINT ID CLBRA {
-      //$3
+    | OPBRA PRINT param CLBRA {
+      struct scope * print = (struct scope *) malloc(sizeof(struct scope));
+      (print)->type = "print";
+      struct scope * pscope = (struct scope *) malloc(sizeof(struct scope));
+      if(IS_IDEN) {
+        (pscope)->type = "iden";
+        (pscope)->extra = $3.s;
+      } else {
+        (pscope)->type = "number";
+        (pscope)->value = $3.i;
+      }
+      (print)->scopes = pscope;
+      set_body_next_address(cscope, print);
     }
+    | RETURN ID OP NUM {
+      struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope)); 
+      (rreturn)->type = "return";
+      struct scope * body = (struct scope *) malloc(sizeof(struct scope)); 
+      (body)->type = "body";
+      struct scope * ass = (struct scope *) malloc(sizeof(struct scope)); 
+      (ass)->type = "assignment";
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope)); 
+      (iden)->type = "iden";
+      (iden)->extra = $2;
+      struct scope * binary_op = (struct scope *) malloc(sizeof(struct scope)); 
+      (binary_op)->type = "binary_op";
+      (binary_op)->extra = $3;
+      struct scope * iden2 = (struct scope *) malloc(sizeof(struct scope)); 
+      (iden2)->type = "iden";
+      (iden2)->extra = "n";
+      struct scope * num = (struct scope *) malloc(sizeof(struct scope)); 
+      (num)->type = "number";
+      (num)->value = $4; 
+      (iden2)->next = num;
+      (binary_op)->scopes = iden2;
+      (iden)->next = binary_op;
+      (ass)->scopes = iden; 
+      (body)->scopes = ass;
+      (rreturn)->scopes = body; 
+      set_body_next_address(cscope, rreturn);
+    } 
     | ID {
       struct scope * id = (struct scope *) malloc(sizeof(struct scope)); 
       (id)->type = "iden";
@@ -185,7 +233,7 @@ stmt: ID EQ NUM {
       (sif)->scopes = comp;
       (sif)->scopes->next = ifbody;
       set_body_next_address(cscope, sif);
-      prevscope = cscope;
+      sif->prev = cscope;
       cscope = sif;
     }
     | OPBRA GT IDFUNC ID COL {
@@ -200,19 +248,28 @@ stmt: ID EQ NUM {
       (body)->type = "body";
       (func)->scopes = body; 
       set_body_next_address(cscope, func);
+      func->prev = cscope;
+      cscope = func;
       prevscope = cscope;
       cscope = func;
     }  
     | CLBRA NLINE {
-      cscope = prevscope;
-      printf("the end!!!");
+      cscope = cscope->prev;
     }
     | NLINE {
       //do nothing!!!
-    }
+    } 
 ;
 
 ifcomp: LT | GT | EQ EQ
+;
+
+param: ID {
+       IS_IDEN = 1;
+     }
+     | NUM {
+       IS_IDEN = 0;
+     }
 ;
 
 

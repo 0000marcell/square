@@ -74,14 +74,14 @@ struct scope * find_body_next_address(struct scope * sc) {
 
 
 int main() {
-  char *tmp = ":fib";
-  printf("tmp: %s\n", tmp);
-  tmp++;
-  printf("tmp after: %s\n", tmp);
-  /* struct scope * result = find_body_next_address(&global); */
-  /* result->next = (struct scope *) malloc(sizeof(struct scope)); */
-  /* result->next->type = "found"; */
-  /* printf("result: "); */
-  /* free(result->next); */
+  union StringNumber {
+    int i;
+    char *s;
+  };
+
+  union StringNumber x; 
+  x.i = 99;
+  printf("%d\n", x.i);
+
   return 0;  
 }

@@ -15,6 +15,7 @@ struct scope {
   int value;
   struct scope * scopes;
   struct scope * next; 
+  struct scope * prev; 
   int return_value;
 };
 

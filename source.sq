@@ -1,5 +1,8 @@
-x = 999
 [>:fib n:
-  n 
+  n
 ]
-x = [:fib 777]
+
+x = 2
+y = [:fib x + 1]
+
+[:print y]

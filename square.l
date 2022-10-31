@@ -8,8 +8,9 @@ void showError();
 
 
 numbers     ([0-9])+
-operation   ([+])+
+operation   ([+|-])+
 print       (\:print)
+return      (return)
 op_bra      ([\[])
 cl_bra      ([\]])
 idfunc      (\:[a-z]+)
@@ -24,6 +25,7 @@ lessthan    ([<])
 {numbers}      { yylval.number = atoi(yytext); return (NUM);}
 {operation}    { yylval.string = strdup(yytext); return (OP);}
 {print}        { return (PRINT);}
+{return}       { return (RETURN);}
 {op_bra} { 
   yylval.string = strdup(yytext); 
   return (OPBRA);

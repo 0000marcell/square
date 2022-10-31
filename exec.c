@@ -88,6 +88,12 @@ int find_bin_op(struct scope * node, struct arg * args) {
 int traverse(struct scope * node, struct arg * args) {
   printf("node type: %s\n", node->type);
   int result;
+  // return
+  if(strcmp(node->type, "return") == 0 &&
+     strcmp(node->scopes->type, "body") == 0) {
+    result = traverse(node->scopes, args);
+    return result;
+  }
   // case binary_op
   if(strcmp(node->type, "binary_op") == 0){
     int v1;
@@ -123,8 +129,7 @@ int traverse(struct scope * node, struct arg * args) {
     update_args(node->args, args);
     // if fcall has scope we execute the scope before attributing the value to the argument
     if(node->scopes != NULL) {
-      result = traverse(node->scopes, node->args);
-      printf("body exec result: %d\n", result);
+      traverse(node->scopes, node->args);
     }
     // this function syncs the args values on fcall with the args of the calling function
     update_args(func->args, node->args);
@@ -225,6 +230,8 @@ int traverse(struct scope * node, struct arg * args) {
     if(strcmp(inode->type, "function") != 0) {
       result = traverse(inode, args);  
     }
+    // we need to check EARLY_RETURN here to keep returning 
+    // from nested scopes
     if(strcmp(inode->type, "return") == 0 || 
        EARLY_RETURN == 1) {
       EARLY_RETURN = 1;
