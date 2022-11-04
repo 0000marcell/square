@@ -9,9 +9,7 @@ the language will have the following syntax.
   [:if n < 3:
     return n - 1
   ]
-  [:if n > 2: 
-    [:fib n - 1] + [:fib n - 2]
-  ]
+  return [:fib n - 1] + [:fib n - 2]
 ]
 [:fib 10]
 ```

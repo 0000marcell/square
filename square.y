@@ -140,7 +140,34 @@ stmt: ID EQ NUM {
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
     }
-    | ID EQ OPBRA IDFUNC ID OP NUM CLBRA {
+    | OPBRA IDFUNC ID OP NUM CLBRA {
+      struct scope * fcall = (struct scope *) malloc(sizeof(struct scope));
+      (scope)->type = "fcall";
+      (scope)->extra = $2;
+      (fcall)->extra++;
+      struct scope * body = (struct scope *) malloc(sizeof(struct scope));
+      (body)->type = "body";
+      struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
+      (ass)->type = "assignment";
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
+      (iden)->type = "iden";
+      (iden)->extra = $3;
+      struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
+      (bin_op)->type = "binary_op";
+      (bin_op)->extra = $4;  
+      struct scope * iden2 = (struct scope *) malloc(sizeof(struct scope));
+      (iden2)->type = "iden";
+      (iden2)->extra = $3;
+      struct scope * num = (struct scope *) malloc(sizeof(struct scope));
+      (num)->type = "number";
+      (num)->value = $5;
+      (iden2)->next = num;
+      (bin_op)->scopes = iden2;  
+      (iden)->next = bin_op;
+      (ass)->scopes = iden;
+      (body)->scopes = ass;
+      (fcall)->scopes = body;
+      set_body_next_address(cscope, fcall);
     }
     | ID EQ OPBRA IDFUNC NUM CLBRA {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
