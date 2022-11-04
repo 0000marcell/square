@@ -191,7 +191,7 @@ void return_with_fcall() {
                 .extra = "n",
                 .next = &(struct scope) {
                   .type = "number",
-                  .value = 2,
+                  .value = 97,
                 },
               },
               .next = &(struct scope) {
@@ -232,11 +232,6 @@ void return_with_fcall() {
                                 },
                               },
                             },
-                            .extra = "n",
-                            .next = &(struct scope) {
-                              .type = "number",
-                              .value = 1
-                            },
                           },
                         },
                       },
@@ -246,26 +241,40 @@ void return_with_fcall() {
               }
             },
             .next = &(struct scope) {
-              .type = "number",
-              .value = 888
+              .type = "iden",
+              .extra = "n"
             },
           },
         },
         .next = &(struct scope) {
-          .type = "fcall",
-          .extra = "fib",
-          .args = &(struct arg) {
-            .key = "n",
-            .skip_update = 1,
-            .value = 2
+          .type = "assignment",
+          .scopes = &(struct scope) {
+            .type = "iden",
+            .extra = "n",
+            .next = &(struct scope) {
+              .type = "fcall",
+              .extra = "fib",
+              .args = &(struct arg) {
+                .key = "n",
+                .skip_update = 1,
+                .value = 97
+              }
+            }
           },
+          .next = &(struct scope) {
+            .type = "print",
+            .scopes = &(struct scope) {
+              .type = "iden",
+              .extra = "n"
+            }
+          }
         },
       },
     }
   };
   exec(&global);
-  printf(">>>>> return_value %d\n", global.return_value);
-  assert(global.return_value == 1);
+  printf(">>>>> return_value %d\n", global.args->value);
+  assert(global.args->value == 96);
 }
 
 void if_case() {
@@ -810,30 +819,30 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  if_case();
+  //if_case();
   
-  assignment_case();
+  //assignment_case();
 
-  fcall_case();
+  //fcall_case();
 
-  binary_op_case();
+  //binary_op_case();
   
-  recursive_case();
+  //recursive_case();
 
   // doing operation inside the arguments 
-  fcall_with_scopes();
+  //fcall_with_scopes();
 
-  early_return();
+  //early_return();
 
-  return_with_binary_op();
+  //return_with_binary_op();
 
   return_with_fcall();
 
   //fibonacci case
-  fib();
+  //fib();
 
   // print case
-  print_case();
+  //print_case();
 
   return 0;
 }
