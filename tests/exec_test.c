@@ -510,7 +510,117 @@ void binary_op_case() {
   assert(global.return_value == 2);
 }
 
-void fib() {
+void binary_op_with_fcalls() {
+  printf("running tests >>>>>>>>>>>\n");
+  struct scope global = {
+    .type = "function",
+    .extra = "global",
+    .args = &(struct arg) {
+      .key = "n",
+      .value = 999
+    },
+    .return_value = 0,
+    .scopes = &(struct scope) {
+      .type = "body",
+      .scopes = &(struct scope) {
+        .type = "function",
+        .extra = "add",
+        .args = &(struct arg) {
+          .key = "n",
+          .value = 888 
+        },
+        .scopes = &(struct scope) {
+          .type = "body",
+          .scopes = &(struct scope) {
+            .type = "assignment",
+            .scopes = &(struct scope) {
+              .type = "iden",
+              .extra = "n",
+              .next = &(struct scope) {
+                .type = "binary_op",
+                .extra = "+",
+                .scopes = &(struct scope) {
+                  .type = "iden",
+                  .extra = "n",
+                  .next = &(struct scope) {
+                    .type = "number",
+                    .value = 1
+                  }
+                },
+              },
+            },
+            .next = &(struct scope) {
+              .type = "iden",
+              .extra = "n"
+            }
+          },
+        },
+        .next = &(struct scope) {
+          .type = "function",
+          .extra = "main",
+          .args = &(struct arg) {
+            .key = "n",
+            .value = 999
+          },
+          .scopes = &(struct scope) {
+            .type = "body",
+            .scopes = &(struct scope) {
+              .type = "assignment",
+              .scopes = &(struct scope) {
+                .type = "iden",
+                .extra = "n",
+                .next = &(struct scope) {
+                  .type = "binary_op",
+                  .extra = "+",
+                  .scopes = &(struct scope) {
+                    .type = "fcall",
+                    .extra = "add",
+                    .args = &(struct arg) {
+                      .key = "n"
+                    },
+                    .next = &(struct scope) {
+                      .type = "fcall",
+                      .extra = "add",
+                      .args = &(struct arg) {
+                        .key = "n"
+                      },
+                    }
+                  }
+                }
+              },
+              .next = &(struct scope) {
+                .type = "iden",
+                .extra = "n"
+              }
+            }
+          },
+          // after the main function
+          .next = &(struct scope) {
+            .type = "assignment",
+            .scopes = &(struct scope) {
+              .type = "iden",
+              .extra = "n",
+              .next = &(struct scope) {
+                .type = "fcall",
+                .extra = "main",
+                .args = &(struct arg) {
+                  .key = "n",
+                  .skip_update = 1,
+                  .value = 1
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  };
+  exec(&global);
+  printf(">>>>> return value %d\n", global.args->value);
+  assert(global.args->value == 4);
+}
+
+void fib_simplified_version() {
   // fibonacci 
   printf("running tests...\n");
   struct scope global = {
@@ -819,30 +929,31 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  //if_case();
+  if_case();
   
-  //assignment_case();
+  assignment_case();
 
-  //fcall_case();
+  fcall_case();
 
-  //binary_op_case();
+  binary_op_case();
+
+  binary_op_with_fcalls();
   
-  //recursive_case();
+  recursive_case();
 
   // doing operation inside the arguments 
-  //fcall_with_scopes();
+  fcall_with_scopes();
 
-  //early_return();
+  early_return();
 
-  //return_with_binary_op();
+  return_with_binary_op();
 
   return_with_fcall();
 
-  //fibonacci case
-  //fib();
+  fib_simplified_version();
 
   // print case
-  //print_case();
+  print_case();
 
   return 0;
 }

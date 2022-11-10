@@ -13,3 +13,16 @@ the language will have the following syntax.
 ]
 [:fib 10]
 ```
+
+# No need for return statements if it's the last line
+
+```
+[>:fib n:
+  [:if n == 999:
+    return [:fib n - 10]  
+  ]
+  n
+]
+
+n = [:fib 999]
+```

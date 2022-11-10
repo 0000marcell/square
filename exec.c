@@ -179,7 +179,7 @@ int traverse(struct scope * node, struct arg * args) {
 
     return result;
   }
-  // case assignment
+  // case print 
   if(strcmp(node->type, "print") == 0) {
     if(strcmp(node->scopes->type, "number") == 0) {
       printf("%d\n", node->scopes->value);
