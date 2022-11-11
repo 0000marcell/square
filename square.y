@@ -199,6 +199,42 @@ stmt: ID EQ NUM {
       (iden3)->next = num;
       set_body_next_address(cscope, rreturn);
     }
+    | RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA {
+      struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope));
+      (rreturn)->type = "return";
+
+      struct scope * return_body = (struct scope *) malloc(sizeof(struct scope));
+      (return_body)->type = "return";
+
+      struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
+      (ass)->type = "assignment";
+
+      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
+      (ass)->type = "iden";
+      (ass)->extra = "iden";
+
+      struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
+      (bin_op)->type = "bin_op";
+      (bin_op)->extra = $6;
+
+      struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1)->type = "fcall";
+      (fcall1)->extra = $3;
+      struct arg * fcall_args1 = (struct arg *) malloc(sizeof(struct arg));
+      (fcall_args1)->key = $4;
+      (fcall1)->args = fcall_args1;
+
+      struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2)->type = "fcall";
+      (fcall2)->extra = $8;
+      struct arg * fcall_args2 = (struct arg *) malloc(sizeof(struct arg));
+      (fcall_args2)->key = $9;
+      (fcall2)->args = fcall_args2;
+
+      (rreturn)->scopes = ;
+
+      
+       
     | ID EQ OPBRA IDFUNC NUM CLBRA {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
