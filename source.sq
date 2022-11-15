@@ -1,11 +1,9 @@
 [>:add n:
-  n = n + 1
-  n
+  return n + 1
 ]
 
 [>:main n:
-  n = [:add n] + [:add n] 
-  n
+  return [:add n] + [:add n] 
 ]
 
 n = [:main 1]

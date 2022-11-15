@@ -114,21 +114,14 @@ void return_with_binary_op() {
                   .scopes = &(struct scope) {
                     .type = "body",
                     .scopes = &(struct scope) {
-                      .type = "assignment",
+                      .type = "binary_op",
+                      .extra = "-",
                       .scopes = &(struct scope) {
                         .type = "iden",
                         .extra = "n",
                         .next = &(struct scope) {
-                          .type = "binary_op",
-                          .extra = "-",
-                          .scopes = &(struct scope) {
-                            .type = "iden",
-                            .extra = "n",
-                            .next = &(struct scope) {
-                              .type = "number",
-                              .value = 1
-                            },
-                          },
+                          .type = "number",
+                          .value = 1
                         },
                       },
                     },
@@ -922,31 +915,31 @@ void fcall_with_scopes() {
 }
 
 int main() {
-  //if_case();
+  if_case();
   
-  //assignment_case();
+  assignment_case();
 
-  //fcall_case();
+  fcall_case();
 
-  //binary_op_case();
+  binary_op_case();
 
-  //binary_op_with_fcalls();
+  binary_op_with_fcalls();
   
-  //recursive_case();
+  recursive_case();
 
   // doing operation inside the arguments 
-  //fcall_with_scopes();
+  fcall_with_scopes();
 
-  //early_return();
+  early_return();
 
-  //return_with_binary_op();
+  return_with_binary_op();
 
   return_with_fcall();
 
-  //fib_simplified_version();
+  fib_simplified_version();
 
   // print case
-  //print_case();
+  print_case();
 
   return 0;
 }

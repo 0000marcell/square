@@ -206,13 +206,6 @@ stmt: ID EQ NUM {
       struct scope * return_body = (struct scope *) malloc(sizeof(struct scope));
       (return_body)->type = "return";
 
-      struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
-      (ass)->type = "assignment";
-
-      struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
-      (ass)->type = "iden";
-      (ass)->extra = "iden";
-
       struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
       (bin_op)->type = "bin_op";
       (bin_op)->extra = $6;
@@ -220,6 +213,7 @@ stmt: ID EQ NUM {
       struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope));
       (fcall1)->type = "fcall";
       (fcall1)->extra = $3;
+      (fcall1)->extra++;
       struct arg * fcall_args1 = (struct arg *) malloc(sizeof(struct arg));
       (fcall_args1)->key = $4;
       (fcall1)->args = fcall_args1;
@@ -227,14 +221,17 @@ stmt: ID EQ NUM {
       struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope));
       (fcall2)->type = "fcall";
       (fcall2)->extra = $8;
+      (fcall2)->extra++;
       struct arg * fcall_args2 = (struct arg *) malloc(sizeof(struct arg));
       (fcall_args2)->key = $9;
       (fcall2)->args = fcall_args2;
 
-      (rreturn)->scopes = ;
-
-      
-       
+      (rreturn)->scopes = return_body;
+      (return_body)->scopes = bin_op;
+      (bin_op)->scopes = fcall1;
+      (fcall1)->next = fcall2;
+      set_body_next_address(cscope, rreturn);
+    }
     | ID EQ OPBRA IDFUNC NUM CLBRA {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
@@ -275,26 +272,32 @@ stmt: ID EQ NUM {
       (rreturn)->type = "return";
       struct scope * body = (struct scope *) malloc(sizeof(struct scope)); 
       (body)->type = "body";
+
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope)); 
       (ass)->type = "assignment";
+
       struct scope * iden = (struct scope *) malloc(sizeof(struct scope)); 
       (iden)->type = "iden";
       (iden)->extra = $2;
+
       struct scope * binary_op = (struct scope *) malloc(sizeof(struct scope)); 
       (binary_op)->type = "binary_op";
       (binary_op)->extra = $3;
+
       struct scope * iden2 = (struct scope *) malloc(sizeof(struct scope)); 
       (iden2)->type = "iden";
       (iden2)->extra = "n";
+
       struct scope * num = (struct scope *) malloc(sizeof(struct scope)); 
       (num)->type = "number";
       (num)->value = $4; 
-      (iden2)->next = num;
-      (binary_op)->scopes = iden2;
-      (iden)->next = binary_op;
-      (ass)->scopes = iden; 
-      (body)->scopes = ass;
+
       (rreturn)->scopes = body; 
+      (body)->scopes = ass;
+      (ass)->scopes = iden; 
+      (iden)->next = binary_op;
+      (binary_op)->scopes = iden2;
+      (iden2)->next = num;
       set_body_next_address(cscope, rreturn);
     } 
     | ID {
