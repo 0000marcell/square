@@ -204,7 +204,7 @@ stmt: ID EQ NUM {
       (rreturn)->type = "return";
 
       struct scope * return_body = (struct scope *) malloc(sizeof(struct scope));
-      (return_body)->type = "return";
+      (return_body)->type = "body";
 
       struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
       (bin_op)->type = "bin_op";
