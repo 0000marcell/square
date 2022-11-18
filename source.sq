@@ -1,11 +1,10 @@
-[>:add n:
-  return n + 1
+[>:fib n:
+  [:if n < 3:
+    return n - 1
+  ]
+  return [:fib n - 1] + [:fib n - 2]
 ]
 
-[>:main n:
-  return [:add n + 1] + [:add n + 2] 
-]
-
-n = [:main 1]
+n = [:fib 3]
 
 [:print n]

@@ -544,16 +544,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  16
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   46
+#define YYLAST   53
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  19
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  6
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  20
+#define YYNRULES  21
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  51
+#define YYNSTATES  58
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   273
@@ -604,9 +604,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   124,   124,   127,   128,   130,   143,   202,   235,   256,
-     270,   303,   309,   335,   352,   355,   360,   360,   360,   363,
-     366
+       0,   124,   124,   127,   128,   130,   143,   202,   235,   322,
+     343,   357,   390,   396,   422,   439,   442,   447,   447,   447,
+     450,   453
 };
 #endif
 
@@ -653,8 +653,8 @@ static const yytype_int8 yypact[] =
       19,    -3,    10,    15,   -13,    -2,   -13,   -13,    13,    23,
      -13,   -13,    20,    -4,    14,   -13,    22,    11,   -13,   -13,
      -13,   -13,    16,    27,    17,    28,    32,    33,   -13,    24,
-     -13,    29,    30,    34,   -13,   -13,   -13,    26,    31,    35,
-     -13
+     -13,    29,    30,    34,   -13,   -13,    37,    26,    35,    31,
+      36,    38,    39,   -13,    40,    45,    41,   -13
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -662,18 +662,18 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       3,     0,     0,     0,    11,    15,     0,     2,     3,     0,
-       0,     0,     0,     0,    14,     0,     1,     4,     0,     0,
-      20,    19,     0,     0,     0,     5,     0,     0,    10,     9,
-      17,    16,     0,     0,     0,     0,     0,     0,    18,     0,
-      13,     0,     0,     0,    12,     8,     6,     0,     0,     0,
-       7
+       3,     0,     0,     0,    12,    16,     0,     2,     3,     0,
+       0,     0,     0,     0,    15,     0,     1,     4,     0,     0,
+      21,    20,     0,     0,     0,     5,     0,     0,    11,    10,
+      18,    17,     0,     0,     0,     0,     0,     0,    19,     0,
+      14,     0,     0,     0,    13,     9,     6,     0,     0,     0,
+       0,     0,     0,     7,     0,     0,     0,     8
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -13,   -13,    38,   -13,   -13,   -13
+     -13,   -13,    43,   -13,   -13,   -13
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -690,8 +690,9 @@ static const yytype_int8 yytable[] =
       20,    25,     1,     2,     3,    14,    26,    30,    31,     4,
        9,    21,     5,    11,    32,    36,    10,    12,    13,    15,
       37,    16,    18,    19,    23,    24,    28,    27,    34,    29,
-      39,    41,    35,    40,    38,    42,    48,    43,    45,    46,
-      44,     0,    47,     0,    50,    49,    17
+      39,    41,    35,    40,    38,    42,    49,    43,    45,    46,
+      44,    48,    47,    50,    55,    51,    52,    53,    56,     0,
+      57,    17,     0,    54
 };
 
 static const yytype_int8 yycheck[] =
@@ -700,7 +701,8 @@ static const yytype_int8 yycheck[] =
        8,    14,    17,     6,    18,     4,    14,    10,    11,    18,
        9,     0,    10,     4,    14,    10,     3,    14,    14,     9,
        3,     3,    10,    16,    18,     3,    10,     4,     9,     9,
-      16,    -1,     8,    -1,     9,    14,     8
+      16,     4,     8,     8,     4,    14,    10,     9,     3,    -1,
+       9,     8,    -1,    14
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
@@ -711,24 +713,24 @@ static const yytype_int8 yystos[] =
       14,     6,    10,    11,    17,    18,     0,    21,    10,     4,
        3,    14,    24,    14,    10,     3,     8,    14,     3,     9,
       11,    12,    18,    23,    14,    10,     4,     9,    18,     3,
-      16,     3,     3,     4,    16,     9,     9,     8,    10,    14,
-       9
+      16,     3,     3,     4,    16,     9,     9,     8,     4,    10,
+       8,    14,    10,     9,    14,     4,     3,     9
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
        0,    19,    20,    21,    21,    22,    22,    22,    22,    22,
-      22,    22,    22,    22,    22,    22,    23,    23,    23,    24,
-      24
+      22,    22,    22,    22,    22,    22,    22,    23,    23,    23,
+      24,    24
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     3,     7,    10,     6,     4,
-       4,     1,     6,     5,     2,     1,     1,     1,     2,     1,
-       1
+       0,     2,     1,     0,     2,     3,     7,    10,    14,     6,
+       4,     4,     1,     6,     5,     2,     1,     1,     1,     2,
+       1,     1
 };
 
 
@@ -1206,7 +1208,7 @@ yyreduce:
       (ass)->scopes->next = number;
       set_body_next_address(cscope, ass);
     }
-#line 1210 "square.tab.c"
+#line 1212 "square.tab.c"
     break;
 
   case 6: /* stmt: RETURN OPBRA IDFUNC ID OP NUM CLBRA  */
@@ -1270,7 +1272,7 @@ yyreduce:
       (iden3)->next = num;
       set_body_next_address(cscope, rreturn);
     }
-#line 1274 "square.tab.c"
+#line 1276 "square.tab.c"
     break;
 
   case 7: /* stmt: RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA  */
@@ -1308,11 +1310,103 @@ yyreduce:
       (fcall1)->next = fcall2;
       set_body_next_address(cscope, rreturn);
     }
-#line 1312 "square.tab.c"
+#line 1314 "square.tab.c"
     break;
 
-  case 8: /* stmt: ID EQ OPBRA IDFUNC NUM CLBRA  */
+  case 8: /* stmt: RETURN OPBRA IDFUNC ID OP NUM CLBRA OP OPBRA IDFUNC ID OP NUM CLBRA  */
 #line 235 "square.y"
+                                                                          {
+      struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope));
+      (rreturn)->type = "return";
+
+      struct scope * return_body = (struct scope *) malloc(sizeof(struct scope));
+      (return_body)->type = "body";
+
+      struct scope * bin_op_fcall = (struct scope *) malloc(sizeof(struct scope));
+      (bin_op_fcall)->type = "binary_op";
+      (bin_op_fcall)->extra = (yyvsp[-6].string); 
+
+      // fcall1
+      struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1)->type = "fcall";
+      (fcall1)->extra = (yyvsp[-11].string);
+      (fcall1)->extra++;
+
+      struct arg * fcall1_args = (struct arg *) malloc(sizeof(struct arg));
+      (fcall1_args)->key = (yyvsp[-10].string);
+
+      struct scope * fcall1_ass = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1_ass)->type = "assignment";
+
+      struct scope * fcall1_ass_iden1 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1_ass_iden1)->type = "iden";
+      (fcall1_ass_iden1)->extra = (yyvsp[-10].string);
+
+      struct scope * fcall1_ass_bin_op = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1_ass_bin_op)->type = "binary_op";
+      (fcall1_ass_bin_op)->extra = (yyvsp[-9].string);
+
+      struct scope * fcall1_ass_bin_op_iden = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1_ass_bin_op_iden)->type = "iden";
+      (fcall1_ass_bin_op_iden)->extra = (yyvsp[-10].string);
+
+      struct scope * fcall1_ass_bin_op_number = (struct scope *) malloc(sizeof(struct scope));
+      (fcall1_ass_bin_op_number)->type = "number";
+      (fcall1_ass_bin_op_number)->value = (yyvsp[-8].number);
+
+      (fcall1)->args = fcall1_args;
+      (fcall1)->scopes = fcall1_ass;
+      (fcall1_ass)->scopes = fcall1_ass_iden1;
+      (fcall1_ass)->scopes->next = fcall1_ass_bin_op;
+      (fcall1_ass_bin_op)->scopes = fcall1_ass_bin_op_iden;
+      (fcall1_ass_bin_op)->scopes->next = fcall1_ass_bin_op_number;
+
+      // fcall2
+      struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2)->type = "fcall";
+      (fcall2)->extra = (yyvsp[-4].string);
+      (fcall2)->extra++;
+
+      struct arg * fcall2_args = (struct arg *) malloc(sizeof(struct arg));
+      (fcall2_args)->key = (yyvsp[-3].string);
+
+      struct scope * fcall2_ass = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2_ass)->type = "assignment";
+
+      struct scope * fcall2_ass_iden1 = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2_ass_iden1)->type = "iden";
+      (fcall2_ass_iden1)->extra = (yyvsp[-3].string);
+
+      struct scope * fcall2_ass_bin_op = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2_ass_bin_op)->type = "binary_op";
+      (fcall2_ass_bin_op)->extra = (yyvsp[-2].string);
+
+      struct scope * fcall2_ass_bin_op_iden = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2_ass_bin_op_iden)->type = "iden";
+      (fcall2_ass_bin_op_iden)->extra = (yyvsp[-3].string);
+
+      struct scope * fcall2_ass_bin_op_number = (struct scope *) malloc(sizeof(struct scope));
+      (fcall2_ass_bin_op_number)->type = "number";
+      (fcall2_ass_bin_op_number)->value = (yyvsp[-1].number);
+
+      (fcall2)->args = fcall2_args;
+      (fcall2)->scopes = fcall2_ass;
+      (fcall2_ass)->scopes = fcall2_ass_iden1;
+      (fcall2_ass)->scopes->next = fcall2_ass_bin_op;
+      (fcall2_ass_bin_op)->scopes = fcall2_ass_bin_op_iden;
+      (fcall2_ass_bin_op)->scopes->next = fcall2_ass_bin_op_number;
+
+      (rreturn)->scopes = return_body;
+      (return_body)->scopes = bin_op_fcall;
+      (bin_op_fcall)->scopes = fcall1;
+      (bin_op_fcall)->scopes->next = fcall2;
+      set_body_next_address(cscope, rreturn);
+    }
+#line 1406 "square.tab.c"
+    break;
+
+  case 9: /* stmt: ID EQ OPBRA IDFUNC NUM CLBRA  */
+#line 322 "square.y"
                                    {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
@@ -1334,11 +1428,11 @@ yyreduce:
       (fcall)->args = farg;
       set_body_next_address(cscope, ass);
     }
-#line 1338 "square.tab.c"
+#line 1432 "square.tab.c"
     break;
 
-  case 9: /* stmt: OPBRA PRINT param CLBRA  */
-#line 256 "square.y"
+  case 10: /* stmt: OPBRA PRINT param CLBRA  */
+#line 343 "square.y"
                               {
       struct scope * print = (struct scope *) malloc(sizeof(struct scope));
       (print)->type = "print";
@@ -1353,11 +1447,11 @@ yyreduce:
       (print)->scopes = pscope;
       set_body_next_address(cscope, print);
     }
-#line 1357 "square.tab.c"
+#line 1451 "square.tab.c"
     break;
 
-  case 10: /* stmt: RETURN ID OP NUM  */
-#line 270 "square.y"
+  case 11: /* stmt: RETURN ID OP NUM  */
+#line 357 "square.y"
                        {
       struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope)); 
       (rreturn)->type = "return";
@@ -1391,22 +1485,22 @@ yyreduce:
       (iden2)->next = num;
       set_body_next_address(cscope, rreturn);
     }
-#line 1395 "square.tab.c"
+#line 1489 "square.tab.c"
     break;
 
-  case 11: /* stmt: ID  */
-#line 303 "square.y"
+  case 12: /* stmt: ID  */
+#line 390 "square.y"
          {
       struct scope * id = (struct scope *) malloc(sizeof(struct scope)); 
       (id)->type = "iden";
       (id)->extra = (yyvsp[0].string);
       set_body_next_address(cscope, id);
     }
-#line 1406 "square.tab.c"
+#line 1500 "square.tab.c"
     break;
 
-  case 12: /* stmt: OPBRA IDFUNC ID ifcomp NUM COL  */
-#line 309 "square.y"
+  case 13: /* stmt: OPBRA IDFUNC ID ifcomp NUM COL  */
+#line 396 "square.y"
                                      {
       struct scope * sif = (struct scope *) malloc(sizeof(struct scope));
       (sif)->type = "if";
@@ -1433,11 +1527,11 @@ yyreduce:
       sif->prev = cscope;
       cscope = sif;
     }
-#line 1437 "square.tab.c"
+#line 1531 "square.tab.c"
     break;
 
-  case 13: /* stmt: OPBRA GT IDFUNC ID COL  */
-#line 335 "square.y"
+  case 14: /* stmt: OPBRA GT IDFUNC ID COL  */
+#line 422 "square.y"
                              {
       struct scope * func = (struct scope *) malloc(sizeof(struct scope));
       (func)->type = "function";
@@ -1455,43 +1549,43 @@ yyreduce:
       prevscope = cscope;
       cscope = func;
     }
-#line 1459 "square.tab.c"
+#line 1553 "square.tab.c"
     break;
 
-  case 14: /* stmt: CLBRA NLINE  */
-#line 352 "square.y"
+  case 15: /* stmt: CLBRA NLINE  */
+#line 439 "square.y"
                   {
       cscope = cscope->prev;
     }
-#line 1467 "square.tab.c"
+#line 1561 "square.tab.c"
     break;
 
-  case 15: /* stmt: NLINE  */
-#line 355 "square.y"
+  case 16: /* stmt: NLINE  */
+#line 442 "square.y"
             {
       //do nothing!!!
     }
-#line 1475 "square.tab.c"
+#line 1569 "square.tab.c"
     break;
 
-  case 19: /* param: ID  */
-#line 363 "square.y"
+  case 20: /* param: ID  */
+#line 450 "square.y"
           {
        IS_IDEN = 1;
      }
-#line 1483 "square.tab.c"
+#line 1577 "square.tab.c"
     break;
 
-  case 20: /* param: NUM  */
-#line 366 "square.y"
+  case 21: /* param: NUM  */
+#line 453 "square.y"
            {
        IS_IDEN = 0;
      }
-#line 1491 "square.tab.c"
+#line 1585 "square.tab.c"
     break;
 
 
-#line 1495 "square.tab.c"
+#line 1589 "square.tab.c"
 
       default: break;
     }
@@ -1684,7 +1778,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 372 "square.y"
+#line 459 "square.y"
 
 
 int yyerror(char *s)

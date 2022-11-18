@@ -240,7 +240,7 @@ stmt: ID EQ NUM {
       (return_body)->type = "body";
 
       struct scope * bin_op_fcall = (struct scope *) malloc(sizeof(struct scope));
-      (bin_op_fcall)->type = "binary_op"
+      (bin_op_fcall)->type = "binary_op";
       (bin_op_fcall)->extra = $8; 
 
       // fcall1
@@ -271,6 +271,13 @@ stmt: ID EQ NUM {
       (fcall1_ass_bin_op_number)->type = "number";
       (fcall1_ass_bin_op_number)->value = $6;
 
+      (fcall1)->args = fcall1_args;
+      (fcall1)->scopes = fcall1_ass;
+      (fcall1_ass)->scopes = fcall1_ass_iden1;
+      (fcall1_ass)->scopes->next = fcall1_ass_bin_op;
+      (fcall1_ass_bin_op)->scopes = fcall1_ass_bin_op_iden;
+      (fcall1_ass_bin_op)->scopes->next = fcall1_ass_bin_op_number;
+
       // fcall2
       struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope));
       (fcall2)->type = "fcall";
@@ -299,11 +306,17 @@ stmt: ID EQ NUM {
       (fcall2_ass_bin_op_number)->type = "number";
       (fcall2_ass_bin_op_number)->value = $13;
 
+      (fcall2)->args = fcall2_args;
+      (fcall2)->scopes = fcall2_ass;
+      (fcall2_ass)->scopes = fcall2_ass_iden1;
+      (fcall2_ass)->scopes->next = fcall2_ass_bin_op;
+      (fcall2_ass_bin_op)->scopes = fcall2_ass_bin_op_iden;
+      (fcall2_ass_bin_op)->scopes->next = fcall2_ass_bin_op_number;
+
       (rreturn)->scopes = return_body;
       (return_body)->scopes = bin_op_fcall;
       (bin_op_fcall)->scopes = fcall1;
       (bin_op_fcall)->scopes->next = fcall2;
-
       set_body_next_address(cscope, rreturn);
     }
     | ID EQ OPBRA IDFUNC NUM CLBRA {
