@@ -1283,7 +1283,7 @@ yyreduce:
       (return_body)->type = "body";
 
       struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
-      (bin_op)->type = "bin_op";
+      (bin_op)->type = "binary_op";
       (bin_op)->extra = (yyvsp[-4].string);
 
       struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope));

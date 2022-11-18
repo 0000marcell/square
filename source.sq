@@ -3,7 +3,7 @@
 ]
 
 [>:main n:
-  return [:add n] + [:add n] 
+  return [:add n + 1] + [:add n + 2] 
 ]
 
 n = [:main 1]
