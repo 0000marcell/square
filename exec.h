@@ -21,6 +21,12 @@ struct scope {
 
 struct arg * find_iden(char * str, struct arg * args, int abort);
 
+void update_args(struct arg * fargs, struct arg * nargs);
+
+struct arg * dupargs(struct arg * cargs);
+
+struct scope * dupscope(struct scope * cscope);
+
 void exec(struct scope * global);
 
 #endif

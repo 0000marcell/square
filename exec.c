@@ -6,6 +6,32 @@
 struct scope * GLOBAL_SCOPE;
 int EARLY_RETURN = 0;
 
+struct arg * dupargs(struct arg * cargs) {
+  struct arg * nargs = (struct arg *) malloc(sizeof(struct arg));
+  memcpy(nargs, cargs, sizeof(struct arg));
+  struct arg * iargs = cargs->next;
+  if(iargs!= NULL) {
+    (nargs)->next = dupargs(iargs);  
+  }
+  return nargs;
+}
+
+struct scope * dupscope(struct scope * cscope) {
+  struct scope * nscope = (struct scope *) malloc(sizeof(struct scope));
+  memcpy(nscope, cscope, sizeof(struct scope));
+  if(cscope->args != NULL) {
+    (nscope)->args = dupargs(cscope->args);
+  }
+  struct scope * inode = cscope->scopes;
+  if(inode != NULL) {
+    (nscope)->scopes = dupscope(inode);  
+    if(inode->next != NULL) {
+      (nscope)->scopes->next = dupscope(inode->next);
+    }
+  }
+  return nscope;
+}
+
 struct arg * find_iden(char * str, struct arg * args, int abort) {
   if(args == NULL) {
     printf("ERROR: args is a NULL pointer\n");
@@ -35,7 +61,7 @@ struct arg * find_iden(char * str, struct arg * args, int abort) {
   return item;
 }
 
-
+// returns a executable copy of the function found
 struct scope * find_func(char * fname) {
   int didfind = 0;
   struct scope * item = GLOBAL_SCOPE->scopes;
@@ -51,7 +77,8 @@ struct scope * find_func(char * fname) {
     printf("ERROR: could not find function with name: %s\n", fname);
     exit(1);
   }
-  return item;
+  struct scope * result = dupscope(item);
+  return result;
 }
 
 void update_args(struct arg * fargs, struct arg * nargs) {
@@ -125,13 +152,17 @@ int traverse(struct scope * node, struct arg * args) {
   // case fcall 
   if(strcmp(node->type, "fcall") == 0){
     struct scope * func = find_func(node->extra);
-    // syncs the values of fcall with global, takes in to consideration skip_update 
+    // this function changes the args on the fcall based on the global args, 
+    // takes in to consideration skip_update
     update_args(node->args, args);
     // if fcall has scope we execute the scope before attributing the value to the argument
+    // so if we have some arithmetic in the method definition we execute that and change the 
+    // args
     if(node->scopes != NULL) {
       traverse(node->scopes, node->args);
     }
-    // this function syncs the args values on fcall with the args of the calling function
+    // this function changes the args on the function based on the args on the fcall, 
+    // takes into consideration skip_update
     update_args(func->args, node->args);
     // func->scopes is always the body of the function
     result = traverse(func->scopes, func->args);
