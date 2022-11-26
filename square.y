@@ -464,9 +464,9 @@ int yyerror(char *s)
 	return 0;
 }
 
-int main() {
-    yydebug = 1;
-    FILE * pt = fopen("source.sq", "r" );
+int main(int argc, char *argv[]) {
+    yydebug = 0;
+    FILE * pt = fopen(argv[1], "r" );
     if(!pt) {
       printf("File does not exist!!!");
       return -1;
@@ -476,9 +476,7 @@ int main() {
     {
       yyparse();
     }while (!feof(yyin));
-    printf("before exec\n");
     exec(&global);
-    printf("after exec\n");
     return 0;
 }
 

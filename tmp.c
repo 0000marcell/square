@@ -73,15 +73,7 @@ struct scope * find_body_next_address(struct scope * sc) {
 }
 
 
-int main() {
-  union StringNumber {
-    int i;
-    char *s;
-  };
-
-  union StringNumber x; 
-  x.i = 99;
-  printf("%d\n", x.i);
-
+int main(int argc, char *argv[]) {
+  printf("value: %s\n", argv[1]); 
   return 0;  
 }

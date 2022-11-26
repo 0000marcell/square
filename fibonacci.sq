@@ -5,6 +5,6 @@
   return [:fib n - 1] + [:fib n - 2]
 ]
 
-n = [:fib 10]
+n = [:fib 11]
 
 [:print n]
