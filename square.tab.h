@@ -86,8 +86,9 @@ union YYSTYPE
     int i;
     char *s;
   } strnum;
+  struct scope * binop;
 
-#line 91 "square.tab.h"
+#line 92 "square.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

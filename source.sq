@@ -1,0 +1,11 @@
+[>:add n:
+  n 
+]
+
+[>:test n:
+  return 2 + 1
+]
+
+n = [:test 20]
+
+[:print n]
