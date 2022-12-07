@@ -1,11 +1,11 @@
 [>:add n:
-  n 
+  return n + 1
 ]
 
-[>:test n:
-  return 2 + 1
+[>:fib n:
+  return [:add n]
 ]
 
-n = [:test 20]
+n = [:fib 20]
 
 [:print n]

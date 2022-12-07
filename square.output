@@ -15,49 +15,52 @@ Grammar
     3      | stmt stmts
 
     4 stmt: ID EQ NUM
-    5     | RETURN OPBRA IDFUNC binop CLBRA
-    6     | RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA
-    7     | RETURN OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC binop CLBRA
-    8     | ID EQ OPBRA IDFUNC NUM CLBRA
-    9     | OPBRA PRINT param CLBRA
-   10     | RETURN binop
-   11     | ID
-   12     | OPBRA IDFUNC ID ifcomp NUM COL
-   13     | OPBRA GT IDFUNC ID COL
-   14     | CLBRA NLINE
-   15     | NLINE
+    5     | RETURN fcall
+    6     | ID EQ fcall
+    7     | OPBRA PRINT param CLBRA
+    8     | RETURN binop
+    9     | ID
+   10     | OPBRA IDFUNC ID ifcomp NUM COL
+   11     | OPBRA GT IDFUNC ID COL
+   12     | CLBRA NLINE
+   13     | NLINE
 
-   16 ifcomp: LT
-   17       | GT
-   18       | EQ EQ
+   14 ifcomp: LT
+   15       | GT
+   16       | EQ EQ
 
-   19 param: ID
-   20      | NUM
+   17 param: ID
+   18      | NUM
 
-   21 binop: ID OP NUM
-   22      | NUM OP NUM
+   19 fcallparam: ID
+   20           | NUM
+   21           | binop
+
+   22 fcall: OPBRA IDFUNC fcallparam CLBRA
+
+   23 binop: ID OP NUM
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    NUM <number> (258) 4 8 12 20 21 22
-    OP <string> (259) 6 7 21 22
+    NUM <number> (258) 4 10 18 20 23
+    OP <string> (259) 23
     SEMICOLUMN (260)
-    PRINT (261) 9
-    RETURN (262) 5 6 7 10
-    OPBRA <string> (263) 5 6 7 8 9 12 13
-    CLBRA <string> (264) 5 6 7 8 9 14
-    IDFUNC <string> (265) 5 6 7 8 12 13
-    GT <string> (266) 13 17
-    LT <string> (267) 16
+    PRINT (261) 7
+    RETURN (262) 5 8
+    OPBRA <string> (263) 7 10 11 22
+    CLBRA <string> (264) 7 12 22
+    IDFUNC <string> (265) 10 11 22
+    GT <string> (266) 11 15
+    LT <string> (267) 14
     OTHER (268)
-    ID <string> (269) 4 6 8 11 12 13 19 21
+    ID <string> (269) 4 6 9 10 11 17 19 23
     COM (270)
-    COL (271) 12 13
-    NLINE (272) 14 15
-    EQ <string> (273) 4 8 18
+    COL (271) 10 11
+    NLINE (272) 12 13
+    EQ <string> (273) 4 6 16
 
 
 Nonterminals, with rules where they appear
@@ -71,17 +74,23 @@ Nonterminals, with rules where they appear
         on left: 2 3
         on right: 1 3
     stmt <number> (22)
-        on left: 4 5 6 7 8 9 10 11 12 13 14 15
+        on left: 4 5 6 7 8 9 10 11 12 13
         on right: 3
     ifcomp <string> (23)
-        on left: 16 17 18
-        on right: 12
+        on left: 14 15 16
+        on right: 10
     param <strnum> (24)
-        on left: 19 20
-        on right: 9
-    binop <binop> (25)
-        on left: 21 22
-        on right: 5 7 10
+        on left: 17 18
+        on right: 7
+    fcallparam (25)
+        on left: 19 20 21
+        on right: 22
+    fcall <node> (26)
+        on left: 22
+        on right: 5 6
+    binop <node> (27)
+        on left: 23
+        on right: 8 21
 
 
 State 0
@@ -103,23 +112,21 @@ State 0
 
 State 1
 
-    5 stmt: RETURN • OPBRA IDFUNC binop CLBRA
-    6     | RETURN • OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA
-    7     | RETURN • OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC binop CLBRA
-   10     | RETURN • binop
+    5 stmt: RETURN • fcall
+    8     | RETURN • binop
 
-    NUM    shift, and go to state 9
-    OPBRA  shift, and go to state 10
-    ID     shift, and go to state 11
+    OPBRA  shift, and go to state 9
+    ID     shift, and go to state 10
 
+    fcall  go to state 11
     binop  go to state 12
 
 
 State 2
 
-    9 stmt: OPBRA • PRINT param CLBRA
-   12     | OPBRA • IDFUNC ID ifcomp NUM COL
-   13     | OPBRA • GT IDFUNC ID COL
+    7 stmt: OPBRA • PRINT param CLBRA
+   10     | OPBRA • IDFUNC ID ifcomp NUM COL
+   11     | OPBRA • GT IDFUNC ID COL
 
     PRINT   shift, and go to state 13
     IDFUNC  shift, and go to state 14
@@ -128,7 +135,7 @@ State 2
 
 State 3
 
-   14 stmt: CLBRA • NLINE
+   12 stmt: CLBRA • NLINE
 
     NLINE  shift, and go to state 16
 
@@ -136,19 +143,19 @@ State 3
 State 4
 
     4 stmt: ID • EQ NUM
-    8     | ID • EQ OPBRA IDFUNC NUM CLBRA
-   11     | ID •
+    6     | ID • EQ fcall
+    9     | ID •
 
     EQ  shift, and go to state 17
 
-    $default  reduce using rule 11 (stmt)
+    $default  reduce using rule 9 (stmt)
 
 
 State 5
 
-   15 stmt: NLINE •
+   13 stmt: NLINE •
 
-    $default  reduce using rule 15 (stmt)
+    $default  reduce using rule 13 (stmt)
 
 
 State 6
@@ -183,72 +190,72 @@ State 8
 
 State 9
 
-   22 binop: NUM • OP NUM
+   22 fcall: OPBRA • IDFUNC fcallparam CLBRA
 
-    OP  shift, and go to state 20
+    IDFUNC  shift, and go to state 20
 
 
 State 10
 
-    5 stmt: RETURN OPBRA • IDFUNC binop CLBRA
-    6     | RETURN OPBRA • IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA
-    7     | RETURN OPBRA • IDFUNC binop CLBRA OP OPBRA IDFUNC binop CLBRA
+   23 binop: ID • OP NUM
 
-    IDFUNC  shift, and go to state 21
+    OP  shift, and go to state 21
 
 
 State 11
 
-   21 binop: ID • OP NUM
+    5 stmt: RETURN fcall •
 
-    OP  shift, and go to state 22
+    $default  reduce using rule 5 (stmt)
 
 
 State 12
 
-   10 stmt: RETURN binop •
+    8 stmt: RETURN binop •
 
-    $default  reduce using rule 10 (stmt)
+    $default  reduce using rule 8 (stmt)
 
 
 State 13
 
-    9 stmt: OPBRA PRINT • param CLBRA
+    7 stmt: OPBRA PRINT • param CLBRA
 
-    NUM  shift, and go to state 23
-    ID   shift, and go to state 24
+    NUM  shift, and go to state 22
+    ID   shift, and go to state 23
 
-    param  go to state 25
+    param  go to state 24
 
 
 State 14
 
-   12 stmt: OPBRA IDFUNC • ID ifcomp NUM COL
+   10 stmt: OPBRA IDFUNC • ID ifcomp NUM COL
 
-    ID  shift, and go to state 26
+    ID  shift, and go to state 25
 
 
 State 15
 
-   13 stmt: OPBRA GT • IDFUNC ID COL
+   11 stmt: OPBRA GT • IDFUNC ID COL
 
-    IDFUNC  shift, and go to state 27
+    IDFUNC  shift, and go to state 26
 
 
 State 16
 
-   14 stmt: CLBRA NLINE •
+   12 stmt: CLBRA NLINE •
 
-    $default  reduce using rule 14 (stmt)
+    $default  reduce using rule 12 (stmt)
 
 
 State 17
 
     4 stmt: ID EQ • NUM
-    8     | ID EQ • OPBRA IDFUNC NUM CLBRA
+    6     | ID EQ • fcall
 
-    NUM    shift, and go to state 28
-    OPBRA  shift, and go to state 29
+    NUM    shift, and go to state 27
+    OPBRA  shift, and go to state 9
+
+    fcall  go to state 28
 
 
 State 18
@@ -267,54 +274,46 @@ State 19
 
 State 20
 
-   22 binop: NUM OP • NUM
+   22 fcall: OPBRA IDFUNC • fcallparam CLBRA
 
-    NUM  shift, and go to state 30
+    NUM  shift, and go to state 29
+    ID   shift, and go to state 30
+
+    fcallparam  go to state 31
+    binop       go to state 32
 
 
 State 21
 
-    5 stmt: RETURN OPBRA IDFUNC • binop CLBRA
-    6     | RETURN OPBRA IDFUNC • ID CLBRA OP OPBRA IDFUNC ID CLBRA
-    7     | RETURN OPBRA IDFUNC • binop CLBRA OP OPBRA IDFUNC binop CLBRA
-
-    NUM  shift, and go to state 9
-    ID   shift, and go to state 31
-
-    binop  go to state 32
-
-
-State 22
-
-   21 binop: ID OP • NUM
+   23 binop: ID OP • NUM
 
     NUM  shift, and go to state 33
 
 
+State 22
+
+   18 param: NUM •
+
+    $default  reduce using rule 18 (param)
+
+
 State 23
 
-   20 param: NUM •
+   17 param: ID •
 
-    $default  reduce using rule 20 (param)
+    $default  reduce using rule 17 (param)
 
 
 State 24
 
-   19 param: ID •
-
-    $default  reduce using rule 19 (param)
-
-
-State 25
-
-    9 stmt: OPBRA PRINT param • CLBRA
+    7 stmt: OPBRA PRINT param • CLBRA
 
     CLBRA  shift, and go to state 34
 
 
-State 26
+State 25
 
-   12 stmt: OPBRA IDFUNC ID • ifcomp NUM COL
+   10 stmt: OPBRA IDFUNC ID • ifcomp NUM COL
 
     GT  shift, and go to state 35
     LT  shift, and go to state 36
@@ -323,234 +322,137 @@ State 26
     ifcomp  go to state 38
 
 
-State 27
+State 26
 
-   13 stmt: OPBRA GT IDFUNC • ID COL
+   11 stmt: OPBRA GT IDFUNC • ID COL
 
     ID  shift, and go to state 39
 
 
-State 28
+State 27
 
     4 stmt: ID EQ NUM •
 
     $default  reduce using rule 4 (stmt)
 
 
-State 29
+State 28
 
-    8 stmt: ID EQ OPBRA • IDFUNC NUM CLBRA
-
-    IDFUNC  shift, and go to state 40
-
-
-State 30
-
-   22 binop: NUM OP NUM •
-
-    $default  reduce using rule 22 (binop)
-
-
-State 31
-
-    6 stmt: RETURN OPBRA IDFUNC ID • CLBRA OP OPBRA IDFUNC ID CLBRA
-   21 binop: ID • OP NUM
-
-    OP     shift, and go to state 22
-    CLBRA  shift, and go to state 41
-
-
-State 32
-
-    5 stmt: RETURN OPBRA IDFUNC binop • CLBRA
-    7     | RETURN OPBRA IDFUNC binop • CLBRA OP OPBRA IDFUNC binop CLBRA
-
-    CLBRA  shift, and go to state 42
-
-
-State 33
-
-   21 binop: ID OP NUM •
-
-    $default  reduce using rule 21 (binop)
-
-
-State 34
-
-    9 stmt: OPBRA PRINT param CLBRA •
-
-    $default  reduce using rule 9 (stmt)
-
-
-State 35
-
-   17 ifcomp: GT •
-
-    $default  reduce using rule 17 (ifcomp)
-
-
-State 36
-
-   16 ifcomp: LT •
-
-    $default  reduce using rule 16 (ifcomp)
-
-
-State 37
-
-   18 ifcomp: EQ • EQ
-
-    EQ  shift, and go to state 43
-
-
-State 38
-
-   12 stmt: OPBRA IDFUNC ID ifcomp • NUM COL
-
-    NUM  shift, and go to state 44
-
-
-State 39
-
-   13 stmt: OPBRA GT IDFUNC ID • COL
-
-    COL  shift, and go to state 45
-
-
-State 40
-
-    8 stmt: ID EQ OPBRA IDFUNC • NUM CLBRA
-
-    NUM  shift, and go to state 46
-
-
-State 41
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA • OP OPBRA IDFUNC ID CLBRA
-
-    OP  shift, and go to state 47
-
-
-State 42
-
-    5 stmt: RETURN OPBRA IDFUNC binop CLBRA •
-    7     | RETURN OPBRA IDFUNC binop CLBRA • OP OPBRA IDFUNC binop CLBRA
-
-    OP  shift, and go to state 48
-
-    $default  reduce using rule 5 (stmt)
-
-
-State 43
-
-   18 ifcomp: EQ EQ •
-
-    $default  reduce using rule 18 (ifcomp)
-
-
-State 44
-
-   12 stmt: OPBRA IDFUNC ID ifcomp NUM • COL
-
-    COL  shift, and go to state 49
-
-
-State 45
-
-   13 stmt: OPBRA GT IDFUNC ID COL •
-
-    $default  reduce using rule 13 (stmt)
-
-
-State 46
-
-    8 stmt: ID EQ OPBRA IDFUNC NUM • CLBRA
-
-    CLBRA  shift, and go to state 50
-
-
-State 47
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA OP • OPBRA IDFUNC ID CLBRA
-
-    OPBRA  shift, and go to state 51
-
-
-State 48
-
-    7 stmt: RETURN OPBRA IDFUNC binop CLBRA OP • OPBRA IDFUNC binop CLBRA
-
-    OPBRA  shift, and go to state 52
-
-
-State 49
-
-   12 stmt: OPBRA IDFUNC ID ifcomp NUM COL •
-
-    $default  reduce using rule 12 (stmt)
-
-
-State 50
-
-    8 stmt: ID EQ OPBRA IDFUNC NUM CLBRA •
-
-    $default  reduce using rule 8 (stmt)
-
-
-State 51
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA OP OPBRA • IDFUNC ID CLBRA
-
-    IDFUNC  shift, and go to state 53
-
-
-State 52
-
-    7 stmt: RETURN OPBRA IDFUNC binop CLBRA OP OPBRA • IDFUNC binop CLBRA
-
-    IDFUNC  shift, and go to state 54
-
-
-State 53
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC • ID CLBRA
-
-    ID  shift, and go to state 55
-
-
-State 54
-
-    7 stmt: RETURN OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC • binop CLBRA
-
-    NUM  shift, and go to state 9
-    ID   shift, and go to state 11
-
-    binop  go to state 56
-
-
-State 55
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID • CLBRA
-
-    CLBRA  shift, and go to state 57
-
-
-State 56
-
-    7 stmt: RETURN OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC binop • CLBRA
-
-    CLBRA  shift, and go to state 58
-
-
-State 57
-
-    6 stmt: RETURN OPBRA IDFUNC ID CLBRA OP OPBRA IDFUNC ID CLBRA •
+    6 stmt: ID EQ fcall •
 
     $default  reduce using rule 6 (stmt)
 
 
-State 58
+State 29
 
-    7 stmt: RETURN OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC binop CLBRA •
+   20 fcallparam: NUM •
+
+    $default  reduce using rule 20 (fcallparam)
+
+
+State 30
+
+   19 fcallparam: ID •
+   23 binop: ID • OP NUM
+
+    OP  shift, and go to state 21
+
+    $default  reduce using rule 19 (fcallparam)
+
+
+State 31
+
+   22 fcall: OPBRA IDFUNC fcallparam • CLBRA
+
+    CLBRA  shift, and go to state 40
+
+
+State 32
+
+   21 fcallparam: binop •
+
+    $default  reduce using rule 21 (fcallparam)
+
+
+State 33
+
+   23 binop: ID OP NUM •
+
+    $default  reduce using rule 23 (binop)
+
+
+State 34
+
+    7 stmt: OPBRA PRINT param CLBRA •
 
     $default  reduce using rule 7 (stmt)
+
+
+State 35
+
+   15 ifcomp: GT •
+
+    $default  reduce using rule 15 (ifcomp)
+
+
+State 36
+
+   14 ifcomp: LT •
+
+    $default  reduce using rule 14 (ifcomp)
+
+
+State 37
+
+   16 ifcomp: EQ • EQ
+
+    EQ  shift, and go to state 41
+
+
+State 38
+
+   10 stmt: OPBRA IDFUNC ID ifcomp • NUM COL
+
+    NUM  shift, and go to state 42
+
+
+State 39
+
+   11 stmt: OPBRA GT IDFUNC ID • COL
+
+    COL  shift, and go to state 43
+
+
+State 40
+
+   22 fcall: OPBRA IDFUNC fcallparam CLBRA •
+
+    $default  reduce using rule 22 (fcall)
+
+
+State 41
+
+   16 ifcomp: EQ EQ •
+
+    $default  reduce using rule 16 (ifcomp)
+
+
+State 42
+
+   10 stmt: OPBRA IDFUNC ID ifcomp NUM • COL
+
+    COL  shift, and go to state 44
+
+
+State 43
+
+   11 stmt: OPBRA GT IDFUNC ID COL •
+
+    $default  reduce using rule 11 (stmt)
+
+
+State 44
+
+   10 stmt: OPBRA IDFUNC ID ifcomp NUM COL •
+
+    $default  reduce using rule 10 (stmt)
