@@ -82,13 +82,9 @@ union YYSTYPE
 
   int number;
   char *string;
-  union StringNumber {
-    int i;
-    char *s;
-  } strnum;
   struct scope * node;
 
-#line 92 "square.tab.h"
+#line 88 "square.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

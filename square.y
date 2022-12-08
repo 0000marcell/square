@@ -100,10 +100,6 @@ char * find_func_args(int pos, char * fname) {
 %union{
   int number;
   char *string;
-  union StringNumber {
-    int i;
-    char *s;
-  } strnum;
   struct scope * node;
 }
 
@@ -118,7 +114,8 @@ char * find_func_args(int pos, char * fname) {
 %type <string> ifcomp 
 %type <node> binop 
 %type <node> fcall 
-%type <strnum> param 
+%type <node> fcallparam 
+%type <node> param 
 %type <string> OP 
 %type	<number> stmt
 
@@ -155,98 +152,23 @@ stmt: ID EQ NUM {
       
       set_body_next_address(cscope, rreturn);
     }
-    /* | RETURN fcall OP fcall { */
-    /*   struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (rreturn)->type = "return"; */
+    | RETURN fcall OP fcall {
+      struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope));
+      (rreturn)->type = "return";
 
-    /*   struct scope * return_body = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (return_body)->type = "body"; */
+      struct scope * return_body = (struct scope *) malloc(sizeof(struct scope));
+      (return_body)->type = "body";
 
-    /*   struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (bin_op)->type = "binary_op"; */
-    /*   (bin_op)->extra = $6; */
+      struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));
+      (bin_op)->type = "binary_op";
+      (bin_op)->extra = $3;
 
-    /*   struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall1)->type = "fcall"; */
-    /*   (fcall1)->extra = $3; */
-    /*   (fcall1)->extra++; */
-    /*   struct arg * fcall_args1 = (struct arg *) malloc(sizeof(struct arg)); */
-    /*   (fcall_args1)->key = $4; */
-    /*   (fcall1)->args = fcall_args1; */
-
-    /*   struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall2)->type = "fcall"; */
-    /*   (fcall2)->extra = $8; */
-    /*   (fcall2)->extra++; */
-    /*   struct arg * fcall_args2 = (struct arg *) malloc(sizeof(struct arg)); */
-    /*   (fcall_args2)->key = $9; */
-    /*   (fcall2)->args = fcall_args2; */
-
-    /*   (rreturn)->scopes = return_body; */
-    /*   (return_body)->scopes = bin_op; */
-    /*   (bin_op)->scopes = fcall1; */
-    /*   (fcall1)->next = fcall2; */
-    /*   set_body_next_address(cscope, rreturn); */
-    /* } */
-    /* | RETURN OPBRA IDFUNC binop CLBRA OP OPBRA IDFUNC binop CLBRA { */
-    /*   struct scope * rreturn = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (rreturn)->type = "return"; */
-
-    /*   struct scope * return_body = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (return_body)->type = "body"; */
-
-    /*   struct scope * bin_op_fcall = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (bin_op_fcall)->type = "binary_op"; */
-    /*   (bin_op_fcall)->extra = $6; */ 
-
-    /*   // fcall1 */
-    /*   struct scope * fcall1 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall1)->type = "fcall"; */
-    /*   (fcall1)->extra = $3; */
-    /*   (fcall1)->extra++; */
-
-    /*   struct arg * fcall1_args = (struct arg *) malloc(sizeof(struct arg)); */
-    /*   (fcall1_args)->key = $4->scopes->extra; */
-
-    /*   struct scope * fcall1_ass = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall1_ass)->type = "assignment"; */
-
-    /*   struct scope * fcall1_ass_iden1 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall1_ass_iden1)->type = "iden"; */
-    /*   (fcall1_ass_iden1)->extra = $4->scopes->extra; */
-
-    /*   (fcall1)->args = fcall1_args; */
-    /*   (fcall1)->scopes = fcall1_ass; */
-    /*   (fcall1_ass)->scopes = fcall1_ass_iden1; */
-    /*   (fcall1_ass)->scopes->next = $4; */
-
-    /*   // fcall2 */
-    /*   struct scope * fcall2 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall2)->type = "fcall"; */
-    /*   (fcall2)->extra = $8; */
-    /*   (fcall2)->extra++; */
-
-    /*   struct arg * fcall2_args = (struct arg *) malloc(sizeof(struct arg)); */
-    /*   (fcall2_args)->key = $9->scopes->extra; */
-
-    /*   struct scope * fcall2_ass = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall2_ass)->type = "assignment"; */
-
-    /*   struct scope * fcall2_ass_iden1 = (struct scope *) malloc(sizeof(struct scope)); */
-    /*   (fcall2_ass_iden1)->type = "iden"; */
-    /*   (fcall2_ass_iden1)->extra = $9->scopes->extra; */
-
-    /*   (fcall2)->args = fcall2_args; */
-    /*   (fcall2)->scopes = fcall2_ass; */
-    /*   (fcall2_ass)->scopes = fcall2_ass_iden1; */
-    /*   (fcall2_ass)->scopes->next = $9; */
-
-    /*   (rreturn)->scopes = return_body; */
-    /*   (return_body)->scopes = bin_op_fcall; */
-    /*   (bin_op_fcall)->scopes = fcall1; */
-    /*   (bin_op_fcall)->scopes->next = fcall2; */
-    /*   set_body_next_address(cscope, rreturn); */
-    /* } */
+      (rreturn)->scopes = return_body;
+      (return_body)->scopes = bin_op;
+      (bin_op)->scopes = $2;
+      ($2)->next = $4;
+      set_body_next_address(cscope, rreturn);
+    }
     | ID EQ fcall {
       struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
       (ass)->type = "assignment";
@@ -261,15 +183,7 @@ stmt: ID EQ NUM {
     | OPBRA PRINT param CLBRA {
       struct scope * print = (struct scope *) malloc(sizeof(struct scope));
       (print)->type = "print";
-      struct scope * pscope = (struct scope *) malloc(sizeof(struct scope));
-      if(IS_IDEN) {
-        (pscope)->type = "iden";
-        (pscope)->extra = $3.s;
-      } else {
-        (pscope)->type = "number";
-        (pscope)->value = $3.i;
-      }
-      (print)->scopes = pscope;
+      (print)->scopes = $3;
       set_body_next_address(cscope, print);
     }
     | RETURN binop {
@@ -343,10 +257,16 @@ ifcomp: LT | GT | EQ EQ
 ;
 
 param: ID {
-       IS_IDEN = 1;
+       struct scope * obj = (struct scope *) malloc(sizeof(struct scope));
+       (obj)->type = "iden";
+       (obj)->extra = $1;
+       $$ = obj;
      }
      | NUM {
-       IS_IDEN = 0;
+       struct scope * obj = (struct scope *) malloc(sizeof(struct scope));
+       (obj)->type = "number";
+       (obj)->value = $1;
+       $$ = obj;
      }
 ;
 
@@ -359,7 +279,7 @@ fcallparam: ID {
           | NUM {
               struct scope * obj = (struct scope *) malloc(sizeof(struct scope));
               (obj)->type = "number";
-              (obj)->extra = $1;
+              (obj)->value = $1;
               $$ = obj;
           }
           | binop
@@ -374,18 +294,19 @@ fcall: OPBRA IDFUNC fcallparam CLBRA {
        (fcall_body)->type = "body";
        (fcall)->scopes = fcall_body;
        struct arg * fcall_args = (struct arg *) malloc(sizeof(struct arg));
-       if(strcmp($3->type == "iden") == 0) {
+       if(strcmp($3->type, "iden") == 0) {
          (fcall_args)->key = $3->extra;
-       } else if(strcmp($3->type == "number") == 0) {
+       } else if(strcmp($3->type, "number") == 0) {
           (fcall_args)->key = find_func_args(1, (fcall)->extra);
           (fcall_args)->skip_update = 1;
-          (fcall_args)->value = $3;
-       } else if(strcmp($3->type == "binary_op") == 0) {
+          (fcall_args)->value = $3->value;
+       } else if(strcmp($3->type, "binary_op") == 0) {
          struct scope * ass = (struct scope *) malloc(sizeof(struct scope));
          (ass)->type = "assignment";
          struct scope * iden = (struct scope *) malloc(sizeof(struct scope));
          (iden)->type = "iden";
          (iden)->extra = $3->scopes->extra;
+         (fcall_args)->key = $3->scopes->extra;
          (fcall_body)->scopes = ass;
          (ass)->scopes = iden;
          (iden)->next = $3;
@@ -396,33 +317,6 @@ fcall: OPBRA IDFUNC fcallparam CLBRA {
        $$ = fcall;
      }
 ;
-     /* | OPBRA IDFUNC ID CLBRA { */
-     /*   struct scope * fcall = (struct scope *) malloc(sizeof(struct scope)); */
-     /*   (fcall)->type = "fcall"; */
-     /*   (fcall)->extra = $2; */
-     /*   (fcall)->extra++; */
-     /*   struct arg * fcall_args = (struct arg *) malloc(sizeof(struct arg)); */
-     /*   (fcall_args)->key = $3; */
-     /*   (fcall)->args = fcall_args; */
-
-     /*   $$ = fcall; */
-     /* } */
-     /* | OPBRA IDFUNC NUM CLBRA { */
-     /*   struct scope * fcall = (struct scope *) malloc(sizeof(struct scope)); */
-     /*   (fcall)->type = "fcall"; */
-     /*   (fcall)->extra = $2; */
-     /*   (fcall)->extra++; */
-     /*   struct arg * fcall_args = (struct arg *) malloc(sizeof(struct arg)); */
-     /*   (fcall_args)->key = find_func_args(1, (fcall)->extra); */
-     /*   (fcall_args)->skip_update = 1; */
-     /*   (fcall_args)->value = $3; */
-
-     /*   (fcall)->args = fcall_args; */
-
-     /*   $$ = fcall; */
-     /* } */
-
- 
 
 binop: ID OP NUM {
        struct scope * bin_op = (struct scope *) malloc(sizeof(struct scope));

@@ -63,5 +63,5 @@ lessthan    ([<])
 
 
 void showError(){
-  printf("Other input");
+  printf("Could not identify input");
 }
