@@ -1,9 +1,12 @@
 # Square Language 
 
-This is toy language built for learning purposes, the plan is to use flex and bison
-to create an AST then transform the AST to x86 instructions  
-the language will have the following syntax.
+This is very minimal toy language built for learning purposes, the objective was 
+to create a language and write Fibonacci in it, the language uses flex and bison
+to parse a simple `AST` that is executed by a C program I have some plans on 
+transforming the `AST` into x86 instructions in the future
+the language have the following syntax.
 
+## Fibonacci in square 
 ```
 [>:fib n:
   [:if n < 3:
@@ -14,15 +17,29 @@ the language will have the following syntax.
 [:fib 10]
 ```
 
-# No need for return statements if it's the last line
+# Function declaration 
 
 ```
 [>:fib n:
-  [:if n == 999:
-    return [:fib n - 10]  
-  ]
-  n
+  return n
 ]
+```
 
-n = [:fib 999]
+# Function calls
+```
+[:fib 10]
+```
+
+# If statements
+```
+[:if n < 3:
+  return n - 1
+]
+```
+
+# Basic arithmetics
+```
+1 + 2
+x + y
+y + 3
 ```
