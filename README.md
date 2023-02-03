@@ -1,6 +1,6 @@
 # Square Language 
 
-This is very minimal toy language built for learning purposes, the objective was 
+This is a very minimal toy language built for learning purposes, the objective was 
 to create a language and write Fibonacci in it, the language uses flex and bison
 to parse a simple `AST` that is executed by a C program I have some plans on 
 transforming the `AST` into x86 instructions in the future
